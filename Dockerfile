@@ -1,22 +1,13 @@
-FROM jupyter/minimal-notebook:41e066e5caa8
+FROM jupyter/minimal-notebook:1386e2046833
 
-WORKDIR /
-
-COPY condarc condarc
-
-COPY startup.sh startup.sh
-
-WORKDIR /home/jovyan
-
-RUN conda install -y -c cdat/label/nightly -c conda-forge -c cdat -c plotly \
-      nb_conda_kernels nodejs ipywidgets esgf-compute-api=devel bokeh jupyterlab-dash=0.1.0a2 \
-      cdms2=3.1.2 libcdms=3.1.2 cdtime=3.1.2 libdrs=3.1.2 libdrs_f=3.1.2 dask distributed && \
-      pip install --no-cache-dir sidecar nbgitpuller dask_labextension && \
-      jupyter labextension install @jupyter-widgets/jupyterlab-manager \
-                                   @jupyter-widgets/jupyterlab-sidecar \
-                                   @jupyterlab/github \
-                                   dask-labextension \
-                                   jupyterlab_bokeh \
-                                   jupyterlab-dash@0.1.0-alpha.2 && \
-      jupyter serverextension enable --py nbgitpuller --sys-prefix && \
+RUN conda install -c conda-forge -c cdat \
+      nodejs dask distributed \
+      nb_conda_kernels ipywidgets \
+      matplotlib \
+      esgf-compute-api cdms2 && \
       conda clean -a -y
+
+RUN pip install --no-cache-dir sidecar dask_labextension
+
+RUN jupyter labextension install \
+      @jupyter-widgets/jupyterlab-manager @jupyter-widgets/jupyterlab-sidecar dask-labextension
