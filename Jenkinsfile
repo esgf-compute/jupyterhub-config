@@ -7,6 +7,16 @@ pipeline {
   }
   stages {
     stage('Build') {
+      when {
+        anyOf {
+          expression {
+            return params.FORCE_CONTAINER_BUILD
+          }
+
+          changeset 'Dockerfile'
+        }
+
+      }
       steps {
         container(name: 'buildkit', shell: '/bin/sh') {
           sh '''buildctl-daemonless.sh build \\
@@ -38,5 +48,8 @@ pipeline {
       }
     }
 
+  }
+  parameters {
+    booleanParam(name: 'FORCE_CONTAINER_BUILD', defaultValue: false, description: 'Force container build')
   }
 }
