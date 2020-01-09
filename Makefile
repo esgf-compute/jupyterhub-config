@@ -18,7 +18,7 @@ LOCAL_IMPORT_CACHE ?= --import-cache type=local,src=/cache
 REMOTE_EXPORT_CACHE ?= --export-cache type=registry,ref=$(DOCKER_REGISTRY)/$(IMAGE_NAME):cache
 REMOTE_IMPORT_CACHE ?= --import-cache type=registry,ref=$(DOCKER_REGISTRY)/$(IMAGE_NAME):cache
 
-build_conda_pkg: search-bump-patch #: Builds esgf-search conda package
+build_conda_pkg: #: Builds esgf-search conda package
 	docker run -it --rm --privileged \
 		-v ${PWD}:/src -w /src \
 		-v ${PWD}/cache:/cache \
