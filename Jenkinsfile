@@ -24,9 +24,7 @@ pipeline {
         container(name: 'buildkit', shell: '/bin/sh') {
           sh '''#! /bin/sh
 
-ping anaconda.org
-ping google.com
-ping alpinelinux.org'''
+make'''
         }
 
       }
