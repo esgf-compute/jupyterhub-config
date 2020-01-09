@@ -52,4 +52,4 @@ build-container: #: Build notebook image using buildkit locally
 	buildctl-daemonless.sh $(BUILD_ARGS) $(ifeq $(GIT_BRANCH),"master",$(IMAGE_OUTPUT)) $(REMOTE_EXPORT_CACHE) $(REMOTE_IMPORT_CACHE)
 
 help: #: Show help topics
-	@grep "#:" Makefile* | grep -v "@grep" | sort | sed "s/\([A-Za-z_ -]*\):.*#\(.*\)/$$(tput setaf 3)\1$$(tput sgr0)\2/g"
+	@grep "#:" Makefile* | grep -v "@grep" | sort | sed "s/\([A-Za-z_ -]*\):.*#\(.*\)/\1\2/g"
