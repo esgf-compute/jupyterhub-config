@@ -21,7 +21,7 @@ REMOTE_IMPORT_CACHE ?= --import-cache type=registry,ref=$(IMAGE_NAME):cache
 CONDA_BUILD_ARGS ?= build \
 										--frontend dockerfile.v0 \
 										--local context=. \
-										--local dockerfile=/src/src/esgf_search \
+										--local dockerfile=$(PWD)/esgf_search \
 										--opt build-arg:CONDA_USERNAME=$(CONDA_USR) \
 										--opt build-arg:CONDA_PASSWORD=$(CODNA_PSW) 
 
