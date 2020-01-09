@@ -28,10 +28,8 @@ requirements:
 test:
   imports:
     - esgf_search
-    - esgf_search.esgf_search
-    - esgf_search.esgf_facets
-  requires:
-    - pytest
+    - esgf_search.esgf
+    - esgf_search.facets
 
 about:
   home: https://github.com/esgf-nimbus/jupyterhub-config
