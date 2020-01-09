@@ -24,9 +24,9 @@ pipeline {
         container(name: 'buildkit', shell: '/bin/sh') {
           sh '''#! /bin/sh
 
-apk add make
-
-make build-conda-pkg'''
+ping anaconda.org
+ping google.com
+ping alpinelinux.org'''
         }
 
       }
