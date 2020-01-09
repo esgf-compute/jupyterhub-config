@@ -6,43 +6,49 @@ pipeline {
 
   }
   stages {
-    stage('Build') {
+    stage('Build Conda') {
       when {
         anyOf {
           expression {
-            return params.FORCE_CONTAINER_BUILD
+            return params.FORCE_BUILD_CONDA
           }
 
-          changeset 'Dockerfile'
+          changeset '**/src/esgf_search/**'
         }
 
       }
+      environment {
+        CONDA = credentials('conda')
+      }
       steps {
         container(name: 'buildkit', shell: '/bin/sh') {
-          sh '''buildctl-daemonless.sh build \\
-	--frontend dockerfile.v0 \\
-	--local context=. \\
-	--local dockerfile=. \\
-	--output type=image,name=${OUTPUT_REGISTRY}/nimbus-basic:${GIT_COMMIT:0:8},push=true \\
-	--export-cache type=registry,ref=${OUTPUT_REGISTRY}/nimbus-basic:cache \\
-	--import-cache type=registry,ref=${OUTPUT_REGISTRY}/nimbus-basic:cache'''
+          sh '''#! /bin/sh
+
+apk add make
+
+make build-conda-pkg'''
         }
 
       }
     }
 
-    stage('Tag Latest') {
+    stage('Build Container') {
       when {
-        branch 'master'
+        anyOf {
+          expression {
+            return params.FORCE_BUILD_JUPYTER
+          }
+
+          changeset 'Dockerfile'
+          changeset '**/src/esgf_search/**'
+        }
+
       }
       steps {
         container(name: 'buildkit', shell: '/bin/sh') {
-          sh '''buildctl-daemonless.sh build \\
-	--frontend dockerfile.v0 \\
-	--local context=. \\
-	--local dockerfile=. \\
-	--output type=image,name=${OUTPUT_REGISTRY}/nimbus-basic:latest,push=true \\
-	--import-cache type=registry,ref=${OUTPUT_REGISTRY}/nimbus-basic:cache'''
+          sh '''#! /bin/sh
+
+make build-container'''
         }
 
       }
@@ -50,6 +56,7 @@ pipeline {
 
   }
   parameters {
-    booleanParam(name: 'FORCE_CONTAINER_BUILD', defaultValue: false, description: 'Force container build')
+    booleanParam(name: 'FORCE_BUILD_JUPYTER', defaultValue: false, description: 'Force building container')
+    booleanParam(name: 'FORCE_BUILD_CONDA', defaultValue: false, description: 'Force building conda package')
   }
 }
