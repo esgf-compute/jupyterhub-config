@@ -4,3 +4,4 @@ config.yaml
 *.egg-info/
 *.ipynb
 __pycache__/
+cache/
