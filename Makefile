@@ -25,7 +25,7 @@ CONDA_BUILD_ARGS ?= build \
 										--opt build-arg:CONDA_USERNAME=$(CONDA_USR) \
 										--opt build-arg:CONDA_PASSWORD=$(CODNA_PSW) 
 
-build_conda_pkg: #: Builds esgf-search conda package
+build-conda-pkg: #: Builds esgf-search conda package
 	buildctl-daemonless.sh $(CONDA_BUILD_ARGS)
 
 bump-major: #: Bumps the major version
