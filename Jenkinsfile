@@ -24,7 +24,7 @@ pipeline {
         container(name: 'buildkit', shell: '/bin/sh') {
           sh '''#! /bin/sh
 
-make'''
+make build-conda-pkg'''
         }
 
       }
