@@ -18,17 +18,15 @@ LOCAL_IMPORT_CACHE ?= --import-cache type=local,src=/cache
 REMOTE_EXPORT_CACHE ?= --export-cache type=registry,ref=$(DOCKER_REGISTRY)/$(IMAGE_NAME):cache
 REMOTE_IMPORT_CACHE ?= --import-cache type=registry,ref=$(DOCKER_REGISTRY)/$(IMAGE_NAME):cache
 
+CONDA_BUILD_ARGS ?= build \
+										--frontend dockerfile.v0 \
+										--local context=. \
+										--local dockerfile=/src/src/esgf_search \
+										--opt build-arg:CONDA_USERNAME=$(CONDA_USR) \
+										--opt build-arg:CONDA_PASSWORD=$(CODNA_PSW) 
+
 build_conda_pkg: #: Builds esgf-search conda package
-	docker run -it --rm --privileged \
-		-v ${PWD}:/src -w /src \
-		-v ${PWD}/cache:/cache \
-		--entrypoint buildctl-daemonless.sh \
-		moby/buildkit:master \
-		build --frontend dockerfile.v0 --local context=. --local dockerfile=/src/src/esgf_search \
-		--opt build-arg:CONDA_USERNAME=$(CONDA_USR) \
-		--opt build-arg:CONDA_PASSWORD=$(CONDA_PSW) \
-		--export-cache type=local,dest=/cache \
-		--import-cache type=local,src=/cache
+	buildctl-daemonless.sh $(CONDA_BUILD_ARGS)
 
 bump-major: #: Bumps the major version
 	bump2version --config-file src/esgf_search/.bumpversion.cfg major
