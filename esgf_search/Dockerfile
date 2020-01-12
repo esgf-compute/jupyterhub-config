@@ -1,6 +1,6 @@
 FROM continuumio/miniconda3:4.7.12 as build
 
-COPY src/esgf_search/ esgf_search/
+COPY esgf_search/ esgf_search/
 
 WORKDIR esgf_search/
 
