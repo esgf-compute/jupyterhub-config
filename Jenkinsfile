@@ -46,7 +46,7 @@ make build-esgf-search'''
         container(name: 'buildkit', shell: '/bin/sh') {
           sh '''#! /bin/sh
 
-make build-container'''
+make build-jupyterhub'''
         }
 
       }
