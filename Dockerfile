@@ -2,7 +2,7 @@ FROM jupyter/minimal-notebook:ad3574d3c5c7
 
 RUN conda install -c conda-forge -c cdat \
       nodejs \
-      dask distributed xarray xesmf intake metpy netcdf4 pydap  \
+      dask distributed xarray xesmf intake metpy netcdf4 pydap graphviz python-graphviz  \
       nb_conda_kernels ipywidgets \
       matplotlib \
       esgf-compute-api esgf-search cdms2 && \
