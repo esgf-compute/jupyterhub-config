@@ -2,15 +2,11 @@ default: help
 
 .PHONY: bump-major bump-minor bump-patch build-jupyterhub build-esgf-search help
 
-IMAGE_NAME ?= $(if $(OUTPUT_REGISTRY),$(OUTPUT_REGISTRY)/)nimbus-basic
-IMAGE_TAG ?= $(shell git rev-parse --short HEAD)
+IMAGE_NAME = $(if $(OUTPUT_REGISTRY),$(OUTPUT_REGISTRY)/)nimbus-basic
+IMAGE_TAG = $(shell git rev-parse --short HEAD)
 
-ifneq ($(findstring master,$(shell git branch)),)
-OUTPUT = --output type=image,name=$(IMAGE_NAME):$(IMAGE_TAG),push=true \
-				 --output type=image,name=$(IMAGE_NAME):latest,push=true
-else
-OUTPUT = --output type=image,name=$(IMAGE_NAME):$(IMAGE_TAG),push=true
-endif
+TAGGED = --output type=image,name=$(IMAGE_NAME):$(IMAGE_TAG),push=true 
+LATEST = --output type=image,name=$(IMAGE_NAME):latest,push=true
 
 bump-major: #: Bumps the major version
 	bump2version --config-file src/esgf_search/.bumpversion.cfg major
@@ -22,7 +18,11 @@ bump-patch: #: Bumps the patch version
 	bump2version --config-file src/esgf_search/.bumpversion.cfg patch
 
 build-jupyterhub:
-	$(MAKE) build DOCKERFILE_DIR=./
+	$(MAKE) build DOCKERFILE_DIR=./ OUTPUT="$(TAGGED)"
+
+ifneq ($(findstring * master,$(shell git branch)),)
+	$(MAKE) build DOCKERFILE_DIR=./ OUTPUT="$(LATEST)"
+endif
 
 build-esgf-search:
 	$(MAKE) build DOCKERFILE_DIR=esgf_search/
@@ -49,8 +49,8 @@ else
 		--local dockerfile=$(DOCKERFILE_DIR) \
 		--opt build-arg:CONDA_TOKEN=$(CONDA_TOKEN) \
 		$(OUTPUT) \
-		--export-cache type=registry,ref=$(IMAGE_NAME):$(IMAGE_TAG) \
-		--import-cache type=registry,ref=$(IMAGE_NAEM):$(IMAGE_TAG)
+		--export-cache type=registry,ref=$(IMAGE_NAME):cache \
+		--import-cache type=registry,ref=$(IMAGE_NAME):cache
 endif
 
 help: #: Show help topics
