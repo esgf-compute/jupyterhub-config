@@ -127,8 +127,10 @@ class ESGF(object):
                 continue
 
             if x in self.facets:
-                if y not in self.facets[x]:
-                    raise UnknownFacetValueError(y, x, self.facets[x])
+                # Handle search for multiple values e.g. variable='pr,prw'
+                for item in y.split(','):
+                    if item not in self.facets[x]:
+                        raise UnknownFacetValueError(item, x, self.facets[x])
             else:
                 raise UnknownFacetError(x, self.facets)
 
