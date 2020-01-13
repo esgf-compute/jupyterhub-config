@@ -13,7 +13,7 @@ pipeline {
             return params.FORCE_BUILD_CONDA
           }
 
-          changeset '**/src/esgf_search/**'
+          changeset '**/esgf_search/**'
         }
 
       }
@@ -38,7 +38,7 @@ make build-esgf-search'''
           }
 
           changeset 'Dockerfile'
-          changeset '**/src/esgf_search/**'
+          changeset '**/esgf_search/**'
         }
 
       }
