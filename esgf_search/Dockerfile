@@ -9,11 +9,8 @@ RUN conda install -y conda-build anaconda-client && \
 
 FROM build as publish
 
-ARG CONDA_USERNAME
-ENV CONDA_USERNAME $CONDA_USERNAME
-ARG CONDA_PASSWORD
-ENV CONDA_PASSWORD $CONDA_PASSWORD
+ARG CONDA_TOKEN
+ENV CONDA_TOKEN $CONDA_TOKEN
 
 RUN anaconda config --set ssl_verify false && \
-      anaconda login --username ${CONDA_USERNAME} --password ${CONDA_PASSWORD} && \
-      anaconda upload -u cdat --skip $(conda build -c conda-forge . --output)
+      anaconda -t ${CONDA_TOKEN} upload -u cdat --skip $(conda build -c conda-forge . --output)

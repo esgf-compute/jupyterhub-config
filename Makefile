@@ -5,7 +5,12 @@ default: help
 IMAGE_NAME ?= $(if $(OUTPUT_REGISTRY),$(OUTPUT_REGISTRY)/)nimbus-basic
 IMAGE_TAG ?= $(shell git rev-parse --short HEAD)
 
-IMAGE_OUTPUT ?= --output type=image,name=$(IMAGE_NAME):$(IMAGE_TAG),push=true
+ifneq ($(findstring master,$(shell git branch)),)
+OUTPUT = --output type=image,name=$(IMAGE_NAME):$(IMAGE_TAG),push=true \
+				 --output type=image,name=$(IMAGE_NAME):latest,push=true
+else
+OUTPUT = --output type=image,name=$(IMAGE_NAME):$(IMAGE_TAG),push=true
+endif
 
 bump-major: #: Bumps the major version
 	bump2version --config-file src/esgf_search/.bumpversion.cfg major
@@ -27,15 +32,13 @@ ifeq ($(shell which buildctl-daemonless.sh),)
 	docker run -it --rm --privileged \
 		-v $(PWD):/src -w /src \
 		-v $(PWD)/cache:/cache \
-		-v $(PWD)/output:/output \
 		--entrypoint buildctl-daemonless.sh \
 		moby/buildkit:master \
 		build \
 		--frontend dockerfile.v0 \
 		--local context=. \
 		--local dockerfile=$(DOCKERFILE_DIR) \
-		--opt build-arg:CONDA_USERNAME=$(CONDA_USR) \
-		--opt build-arg:CONDA_PASSWORD=$(CONDA_PSW) \
+		--opt build-arg:CONDA_TOKEN=$(CONDA_TOKEN) \
 		--export-cache type=local,dest=/cache \
 		--import-cache type=local,src=/cache 
 else
@@ -44,8 +47,8 @@ else
 		--frontend dockerfile.v0 \
 		--local context=. \
 		--local dockerfile=$(DOCKERFILE_DIR) \
-		--opt build-arg:CONDA_USERNAME=$(CONDA_USR) \
-		--opt build-arg:CONDA_PASSWORD=$(CONDA_PSW) \
+		--opt build-arg:CONDA_TOKEN=$(CONDA_TOKEN) \
+		$(OUTPUT) \
 		--export-cache type=registry,ref=$(IMAGE_NAME):$(IMAGE_TAG) \
 		--import-cache type=registry,ref=$(IMAGE_NAEM):$(IMAGE_TAG)
 endif
