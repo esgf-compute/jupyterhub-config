@@ -25,8 +25,11 @@ SEARCH_PARAMS = (
 
 
 def clean_results(x):
-    if isinstance(x[0], list) and len(x[0]) == 1:
-        return [y[0] for y in x]
+    try:
+        if isinstance(x[0], list) and len(x[0]) == 1:
+            return [y[0] for y in x]
+    except TypeError:
+        pass
 
     return x
 
