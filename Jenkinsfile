@@ -18,13 +18,13 @@ pipeline {
 
       }
       environment {
-        CONDA = credentials('conda')
+        CONDA_TOKEN = credentials('conda-token')
       }
       steps {
         container(name: 'buildkit', shell: '/bin/sh') {
           sh '''#! /bin/sh
 
-make build-conda-pkg'''
+make build-esgf-search'''
         }
 
       }
