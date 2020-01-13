@@ -18,10 +18,10 @@ bump-patch: #: Bumps the patch version
 	bump2version --config-file src/esgf_search/.bumpversion.cfg patch
 
 build-jupyterhub:
-	$(MAKE) build DOCKERFILE_DIR=./ OUTPUT="$(TAGGED)"
-
 ifneq ($(findstring * master,$(shell git branch)),)
 	$(MAKE) build DOCKERFILE_DIR=./ OUTPUT="$(LATEST)"
+else
+	$(MAKE) build DOCKERFILE_DIR=./ OUTPUT="$(TAGGED)"
 endif
 
 build-esgf-search:
