@@ -69,6 +69,7 @@ class ESGF(object):
             'limit': keywords.get('limit', 10),
         }
         self.search_params = search_params or {}
+        self.params = {}
         self._facets = None
 
     @property
@@ -126,14 +127,11 @@ class ESGF(object):
         return df
 
     def search(self, **kwargs):
-        self.default_params['offset'] = 0
+        self.params = kwargs.copy()
+        self.params.update(self.default_params)
+        self.params.update(self.search_params)
 
-        self.search_params.update(kwargs)
-
-        params = self.default_params.copy()
-        params.update(self.search_params)
-
-        return self._search(params)
+        return self._search(self.params)
 
     def next(self):
         if self.page + 1 > self.pages:
@@ -141,12 +139,9 @@ class ESGF(object):
 
         self.page += 1
 
-        self.default_params['offset'] = self.page*self.items_per_page
+        self.params['offset'] = self.page*self.items_per_page
 
-        params = self.default_params.copy()
-        params.update(self.search_params)
-
-        return self._search(params)
+        return self._search(self.params)
 
     def previous(self):
         if self.page - 1 < 0:
@@ -154,12 +149,9 @@ class ESGF(object):
 
         self.page -= 1
 
-        self.default_params['offset'] = self.page*self.items_per_page
+        self.params['offset'] = self.page*self.items_per_page
 
-        params = self.default_params.copy()
-        params.update(self.search_params)
-
-        return self._search(params)
+        return self._search(self.params)
 
 
 class CMIP5(ESGF):
