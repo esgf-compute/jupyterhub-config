@@ -5,7 +5,7 @@ import requests
 
 from esgf_search import facets
 
-SEARCH_PARAMS = (
+KEYWORDS = (
     'facets',
     'offset',
     'limit',
@@ -56,38 +56,49 @@ class UnknownFacetValueError(SearchError):
         super(UnknownFacetValueError, self).__init__(err_msg)
 
 
+# https://earthsystemcog.org/projects/cog/esgf_search_restful_api
 class ESGF(object):
-    def __init__(self, preset=None, base_url=None, items_per_page=None):
+    def __init__(self, base_url=None, search_params=None, **keywords):
         self.base_url = base_url or 'https://esgf-node.llnl.gov/esg-search/search'
-        self.numFound = 0
-        self.page = 0
-        self.items_per_page = items_per_page or 10
+        self.offset = 0
         self.default_params = {
-            'format': 'application/solr+json',
-            'type': 'File',
+            'distrib': keywords.get('distrib', True),
+            'query': keywords.get('query', '*'),
+            'format': keywords.get('format', 'application/solr+json'),
+            'type': keywords.get('type', 'Dataset'),
+            'limit': keywords.get('limit', 10),
         }
-        self.user_params = {}
-
-        if preset is None:
-            preset = 'all'
-
-        self.facets = facets.get_facets(preset)
+        self.search_params = search_params or {}
+        self._facets = None
 
     @property
     def pages(self):
-        return math.ceil(self.numFound / self.items_per_page)
+        return math.ceil(self.num_found / self.default_params['limit'])
+
+    @property
+    def facets(self):
+        if self._facets is None:
+            project = self.search_params.get('project', 'all')
+
+            self._facets = facets.get_facets(preset=project.lower())
+
+        return self._facets.keys()
+
+    def facet_values(self, name):
+        if name not in self.facets:
+            data = facets.get_facets(facets=[name], **self.search_params)
+
+            return data
+
+        return self._facets[name]
 
     def parse_results(self, result):
-        self.numFound = result['response']['numFound']
+        self.num_found = result['response']['numFound']
 
         return result['response']['docs']
 
     def _search(self, kwargs):
-        clean = kwargs.pop('clean', True)
-
-        expand_urls = kwargs.pop('expand_urls', False)
-
-        kwargs['limit'] = self.items_per_page
+        raw = kwargs.get('raw', False)
 
         try:
             response = requests.get(self.base_url, params=kwargs)
@@ -101,40 +112,28 @@ class ESGF(object):
 
         df = pd.DataFrame.from_dict(data)
 
-        if clean:
+        if not raw:
             df = df.apply(clean_results)
 
-        if expand_urls:
-            new_url = df['url'].apply(pd.Series)
+        new_url = df['url'].apply(pd.Series)
 
-            new_url = new_url.rename(columns=lambda x: new_url[x][0].split('|')[-1])
+        new_url = new_url.rename(columns=lambda x: new_url[x][0].split('|')[-1])
 
-            df = pd.concat([df[:], new_url[:]], axis=1)
+        df = pd.concat([df[:], new_url[:]], axis=1)
 
-            del df['url']
+        del df['url']
 
         return df
 
     def search(self, **kwargs):
-        self.user_params = kwargs.copy()
-        self.user_params.update(self.default_params)
+        self.default_params['offset'] = 0
 
-        if 'offset' not in self.user_params:
-            self.user_params['offset'] = 0
+        self.search_params.update(kwargs)
 
-        for x, y in self.user_params.items():
-            if x in SEARCH_PARAMS:
-                continue
+        params = self.default_params.copy()
+        params.update(self.search_params)
 
-            if x in self.facets:
-                # Handle search for multiple values e.g. variable='pr,prw'
-                for item in y.split(','):
-                    if item not in self.facets[x]:
-                        raise UnknownFacetValueError(item, x, self.facets[x])
-            else:
-                raise UnknownFacetError(x, self.facets)
-
-        return self._search(self.user_params)
+        return self._search(params)
 
     def next(self):
         if self.page + 1 > self.pages:
@@ -142,9 +141,12 @@ class ESGF(object):
 
         self.page += 1
 
-        self.user_params['offset'] = self.page*self.items_per_page
+        self.default_params['offset'] = self.page*self.items_per_page
 
-        return self._search(self.user_params)
+        params = self.default_params.copy()
+        params.update(self.search_params)
+
+        return self._search(params)
 
     def previous(self):
         if self.page - 1 < 0:
@@ -152,16 +154,23 @@ class ESGF(object):
 
         self.page -= 1
 
-        self.user_params['offset'] = self.page*self.items_per_page
+        self.default_params['offset'] = self.page*self.items_per_page
 
-        return self._search(self.user_params)
+        params = self.default_params.copy()
+        params.update(self.search_params)
+
+        return self._search(params)
 
 
 class CMIP5(ESGF):
     def __init__(self, **kwargs):
-        super(CMIP5, self).__init__('cmip5', **kwargs)
+        super(CMIP5, self).__init__(**kwargs)
+
+        self.search_params.update(project='CMIP5')
 
 
 class CMIP6(ESGF):
     def __init__(self, **kwargs):
-        super(CMIP6, self).__init__('cmip6', **kwargs)
+        super(CMIP6, self).__init__(**kwargs)
+
+        self.search_params.update(project='CMIP6')

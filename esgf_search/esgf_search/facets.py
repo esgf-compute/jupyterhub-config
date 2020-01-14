@@ -77,21 +77,18 @@ def _load_config(name):
     return data
 
 
-def get_facets(name=None, include_counts=False, overwrite=False, **kwargs):
-    if name is None:
-        name = 'all'
-
+def get_facets(preset=None, include_counts=False, **kwargs):
     search_params = {
         'format': 'application/solr+json',
         'limit': '0',
-        'project': [],
-        'facets': [],
+        'facets': kwargs.pop('facets', []),
     }
 
-    config = _load_config(name)
+    if preset is not None:
+        config = _load_config(preset)
 
-    for x_name, x in config.items():
-        search_params['facets'].extend(x)
+        for x_name, x in config.items():
+            search_params['facets'].extend(x)
 
     search_params['facets'] = ','.join(search_params['facets'])
 
