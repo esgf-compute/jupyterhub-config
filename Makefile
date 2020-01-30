@@ -1,6 +1,6 @@
 default: help
 
-.PHONY: bump-major bump-minor bump-patch build-jupyterhub build-esgf-search help
+.PHONY: bump-major bump-minor bump-patch build-jupyterhub build-search
 
 IMAGE_NAME = $(if $(OUTPUT_REGISTRY),$(OUTPUT_REGISTRY)/)nimbus-basic
 IMAGE_TAG = $(shell git rev-parse --short HEAD)
