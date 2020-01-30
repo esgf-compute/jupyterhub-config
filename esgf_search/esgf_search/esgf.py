@@ -99,7 +99,7 @@ class ESGF(object):
         return result['response']['docs']
 
     def _search(self, kwargs):
-        raw = kwargs.get('raw', False)
+        raw = kwargs.pop('raw', False)
 
         try:
             response = requests.get(self.base_url, params=kwargs)
@@ -116,13 +116,18 @@ class ESGF(object):
         if not raw:
             df = df.apply(clean_results)
 
-        new_url = df['url'].apply(pd.Series)
+            url = df['url'].apply(pd.Series)
 
-        new_url = new_url.rename(columns=lambda x: new_url[x][0].split('|')[-1])
+            gather = []
 
-        df = pd.concat([df[:], new_url[:]], axis=1)
+            for x in ('HTTPServer', 'GridFTP', 'Globus', 'OPENDAP'):
+                f = url.apply(lambda y: y.str.contains(x)).fillna(False)
 
-        del df['url']
+                gather.append(url[f].ffill(axis=1).iloc[:, -1].rename(x))
+
+            df = pd.concat([df]+ gather, axis=1)
+
+            del df['url']
 
         return df
 
