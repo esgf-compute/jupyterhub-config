@@ -10,12 +10,12 @@ pipeline {
       parallel {
         stage('Build') {
           when {
+            branch 'devel'
             anyOf {
               expression {
                 return params.FORCE_BUILD_CONDA
               }
 
-              branch 'devel'
               changeset '**/esgf_search/**'
             }
 
@@ -35,12 +35,12 @@ make build-search TARGET=build'''
 
         stage('Publish') {
           when {
+            branch 'master'
             anyOf {
               expression {
                 return params.FORCE_BUILD_CONDA_PUBLISH
               }
 
-              branch 'master'
               changeset '**/esgf_search/**'
             }
 
@@ -62,23 +62,51 @@ make build-search TARGET=publish'''
     }
 
     stage('Build Container') {
-      when {
-        anyOf {
-          expression {
-            return params.FORCE_BUILD_JUPYTER
+      parallel {
+        stage('Development') {
+          when {
+            branch 'devel'
+            anyOf {
+              expression {
+                return params.FORCE_BUILD_JUPYTER
+              }
+
+              changeset 'Dockerfile'
+              changeset '**/esgf_search/**'
+            }
+
           }
-
-          branch 'master'
-          changeset 'Dockerfile'
-          changeset '**/esgf_search/**'
-        }
-
-      }
-      steps {
-        container(name: 'buildkit', shell: '/bin/sh') {
-          sh '''#! /bin/sh
+          steps {
+            container(name: 'buildkit', shell: '/bin/sh') {
+              sh '''#! /bin/sh
 
 make build-jupyterhub'''
+            }
+
+          }
+        }
+
+        stage('Latest') {
+          when {
+            branch 'master'
+            anyOf {
+              expression {
+                return params.FORCE_BUILD_JUPYTER
+              }
+
+              changeset 'Dockerfile'
+              changeset '**/esgf_search/**'
+            }
+
+          }
+          steps {
+            container(name: 'buildkit', shell: '/bin/sh') {
+              sh '''#! /bin/sh
+
+make build-jupyterhub'''
+            }
+
+          }
         }
 
       }
