@@ -35,7 +35,10 @@ endif
 TARGET_ = --opt target=$(TARGET)
 
 CONDA = --opt build-arg:CONDA_TOKEN=$(CONDA_TOKEN)
+
+ifeq ($(TARGET),dev)
 SEARCH_CONTAINER = --output type=docker,name=esgf-search:latest,dest=/output/esgf-search
+endif
 
 bump-major: #: Bumps the major version
 	bump2version --config-file src/esgf_search/.bumpversion.cfg major
@@ -60,6 +63,7 @@ build-search:
 		CACHE="$(CACHE_)" \
 		EXTRA="$(CONDA)"
 
+run-search: build-search
 	cat output/esgf-search | docker load
 
 	docker run -it --rm --name esgf-search -p 8080:8080 -v $(PWD)/esgf_search:/build -w /build esgf-search:latest 
