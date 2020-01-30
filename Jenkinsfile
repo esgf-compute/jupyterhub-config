@@ -68,6 +68,7 @@ make build-search TARGET=publish'''
             return params.FORCE_BUILD_JUPYTER
           }
 
+          branch 'master'
           changeset 'Dockerfile'
           changeset '**/esgf_search/**'
         }
