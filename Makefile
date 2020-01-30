@@ -41,13 +41,13 @@ SEARCH_CONTAINER = --output type=docker,name=esgf-search:latest,dest=/output/esg
 endif
 
 bump-major: #: Bumps the major version
-	bump2version --config-file src/esgf_search/.bumpversion.cfg major
+	bump2version --config-file esgf_search/.bumpversion.cfg major
 
 bump-minor: #: Bumps the minor version
-	bump2version --config-file src/esgf_search/.bumpversion.cfg minor
+	bump2version --config-file esgf_search/.bumpversion.cfg minor
 
 bump-patch: #: Bumps the patch version
-	bump2version --config-file src/esgf_search/.bumpversion.cfg patch
+	bump2version --config-file esgf_search/.bumpversion.cfg patch
 
 build-jupyterhub:
 ifeq ($(findstring * master,$(GIT_BRANCH)),)
