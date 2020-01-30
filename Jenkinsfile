@@ -1,14 +1,15 @@
 pipeline {
-  agent {
-    node {
-      label 'jenkins-buildkit'
-    }
-
-  }
+  agent none
   stages {
     stage('Build Conda') {
       parallel {
         stage('Build') {
+          agent {
+            node {
+              label 'buildkit'
+            }
+
+          }
           when {
             branch 'devel'
             anyOf {
@@ -34,6 +35,12 @@ make build-search TARGET=build'''
         }
 
         stage('Publish') {
+          agent {
+            node {
+              label 'buildkit'
+            }
+
+          }
           when {
             branch 'master'
             anyOf {
@@ -64,6 +71,12 @@ make build-search TARGET=publish'''
     stage('Build Container') {
       parallel {
         stage('Development') {
+          agent {
+            node {
+              label 'buildkit'
+            }
+
+          }
           when {
             branch 'devel'
             anyOf {
@@ -87,6 +100,12 @@ make build-jupyterhub'''
         }
 
         stage('Latest') {
+          agent {
+            node {
+              label 'buildkit'
+            }
+
+          }
           when {
             branch 'master'
             anyOf {
