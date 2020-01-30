@@ -7,6 +7,13 @@ WORKDIR esgf_search/
 RUN conda install -y conda-build anaconda-client && \
       conda build -c conda-forge .
 
+FROM build as dev
+
+RUN conda install -c conda-forge --use-local esgf-search jupyterlab && \
+      pip install -e .
+
+ENTRYPOINT jupyter lab --ip 0.0.0.0 --port 8080 --allow-root
+
 FROM build as publish
 
 ARG CONDA_TOKEN

@@ -1,0 +1,8 @@
+cache/
+.dockerignore
+.git
+.gitignore
+Jenkinsfile
+Makefile
+output/
+README.md
