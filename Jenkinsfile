@@ -6,7 +6,7 @@ pipeline {
         stage('Build') {
           agent {
             node {
-              label 'buildkit'
+              label 'jenkins-buildkit'
             }
 
           }
@@ -37,7 +37,7 @@ make build-search TARGET=build'''
         stage('Publish') {
           agent {
             node {
-              label 'buildkit'
+              label 'jenkins-buildkit'
             }
 
           }
@@ -73,7 +73,7 @@ make build-search TARGET=publish'''
         stage('Development') {
           agent {
             node {
-              label 'buildkit'
+              label 'jenkins-buildkit'
             }
 
           }
@@ -102,7 +102,7 @@ make build-jupyterhub'''
         stage('Latest') {
           agent {
             node {
-              label 'buildkit'
+              label 'jenkins-buildkit'
             }
 
           }
