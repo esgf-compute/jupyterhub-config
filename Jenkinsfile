@@ -7,24 +7,55 @@ pipeline {
   }
   stages {
     stage('Build Conda') {
-      when {
-        anyOf {
-          expression {
-            return params.FORCE_BUILD_CONDA
-          }
+      parallel {
+        stage('Build') {
+          when {
+            anyOf {
+              expression {
+                return params.FORCE_BUILD_CONDA
+              }
 
-          changeset '**/esgf_search/**'
+              branch 'devel'
+              changeset '**/esgf_search/**'
+            }
+
+          }
+          environment {
+            CONDA_TOKEN = credentials('conda-token')
+          }
+          steps {
+            container(name: 'buildkit', shell: '/bin/sh') {
+              sh '''#! /bin/sh
+
+make build-search TARGET=build'''
+            }
+
+          }
         }
 
-      }
-      environment {
-        CONDA_TOKEN = credentials('conda-token')
-      }
-      steps {
-        container(name: 'buildkit', shell: '/bin/sh') {
-          sh '''#! /bin/sh
+        stage('Publish') {
+          when {
+            anyOf {
+              expression {
+                return params.FORCE_BUILD_CONDA_PUBLISH
+              }
 
-make build-search'''
+              branch 'master'
+              changeset '**/esgf_search/**'
+            }
+
+          }
+          environment {
+            CONDA_TOKEN = credentials('conda-token')
+          }
+          steps {
+            container(name: 'buildkit', shell: '/bin/sh') {
+              sh '''#! /bin/sh
+
+make build-search TARGET=publish'''
+            }
+
+          }
         }
 
       }
@@ -56,5 +87,6 @@ make build-jupyterhub'''
   parameters {
     booleanParam(name: 'FORCE_BUILD_JUPYTER', defaultValue: false, description: 'Force building container')
     booleanParam(name: 'FORCE_BUILD_CONDA', defaultValue: false, description: 'Force building conda package')
+    booleanParam(name: 'FORCE_BUILD_CONDA_PUBLISH', defaultValue: false, description: 'Force building conda package and publish')
   }
 }
