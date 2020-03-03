@@ -1,4 +1,4 @@
-config.yaml
+*.yaml
 
 .ipynb_checkpoints/
 *.egg-info/
