@@ -1,0 +1,108 @@
+hub:
+  nodeSelector:
+    tier: backend
+
+  baseUrl: /jupyterhub
+
+  extraConfig:
+    jupyterlab: |
+      c.Spawner.cmd = ['jupyter-labhub']
+      c.JupyterHub.base_url = '/jupyterhub'
+      c.JupyterHub.template_vars = {
+        'announcement': '',
+      }
+      c.KubeSpawner.default_url = '/lab/tree/getting_started.ipynb'
+      c.KubeSpawner.fs_gid = 1026
+      c.KubeSpawner.image_pull_policy = 'Always'
+      c.KubeSpawner.init_containers = [
+        {
+          'name': 'init-user-env',
+          'image': 'aims2.llnl.gov/nimbus-basic:latest',
+          'imagePullPolicy': 'Always',
+          'command': [
+            'bash',
+            '-c',
+            'curl https://raw.githubusercontent.com/esgf-nimbus/getting_started/master/esgf-init-env.sh | bash',
+          ],
+          'volumeMounts': [
+            {
+              'name': 'volume-{username}',
+              'mountPath': '/home/jovyan',
+            },
+          ],
+        },
+      ]
+
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1
+      memory: 2Gi
+
+  db:
+    pvc:
+      storageClassName: ceph-csi-block
+      accessModes:
+        - ReadWriteOnce
+      subPath: jupyterhub
+
+singleuser:
+  image:
+    name: aims2.llnl.gov/nimbus-basic
+    tag: latest
+    pullPolicy: Always
+
+  memory:
+    limit: 32G
+    guarantee: 16G
+
+  cpu:
+    limit: 16
+    guarantee: 8
+
+  profileList:
+    - display_name: "ESGF JupyterLab basic instance"
+      description:  "JupyterLab with conda"
+      defualt: true
+    - display_name: "VCDAT JupyterLab instance"
+      description: "Same as the basic instance but with VCDAT pre-installed with"
+      kubespawner_override:
+        image: cdat/vcdat:latest
+
+scheduling:
+  userScheduler:
+    enabled: true
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
+
+ingress:
+  enabled: true
+  annotations:
+    ingress.kubernetes.io/force-hsts: "true"
+    ingress.kubernetes.io/hsts-include-subdomains: "true"
+    ingress.kubernetes.io/hsts-max-age: "31536000"
+    ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - aims2.llnl.gov
+
+prePuller:
+  hook:
+    enabled: false
+
+  continuous:
+    enabled: false
+
+  resources:
+    requests:
+      cpu: 1
+      memory: 512Mi
+    limits:
+      cpu: 2
+      memory: 2Gi
