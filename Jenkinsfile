@@ -57,7 +57,7 @@ make build-search'''
             container(name: 'buildkit', shell: '/bin/sh') {
               sh '''#! /bin/sh
 
-make build-jupyterlab'''
+make build-jupyterlab REGISTRY=${OUTPUT_REGISTRY}'''
             }
 
           }
@@ -86,7 +86,7 @@ make build-jupyterlab'''
             container(name: 'buildkit', shell: '/bin/sh') {
               sh '''#! /bin/sh
 
-make build-jupyterlab'''
+make build-jupyterlab REGISTRY=${OUTPUT_REGISTRY}'''
             }
 
           }
