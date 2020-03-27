@@ -1,68 +1,32 @@
 pipeline {
   agent none
   stages {
-    stage('Build Conda') {
-      parallel {
-        stage('Build') {
-          agent {
-            node {
-              label 'jenkins-buildkit'
-            }
-
-          }
-          when {
-            branch 'devel'
-            anyOf {
-              expression {
-                return params.FORCE_BUILD_CONDA
-              }
-
-              changeset '**/esgf_search/**'
-            }
-
-          }
-          environment {
-            CONDA_TOKEN = credentials('conda-token')
-          }
-          steps {
-            container(name: 'buildkit', shell: '/bin/sh') {
-              sh '''#! /bin/sh
-
-make build-search TARGET=build'''
-            }
-
-          }
+    stage('Publish Search') {
+      agent {
+        node {
+          label 'jenkins-buildkit'
         }
 
-        stage('Publish') {
-          agent {
-            node {
-              label 'jenkins-buildkit'
-            }
-
+      }
+      when {
+        branch 'master'
+        anyOf {
+          expression {
+            return params.FORCE_BUILD_CONDA
           }
-          when {
-            branch 'master'
-            anyOf {
-              expression {
-                return params.FORCE_BUILD_CONDA_PUBLISH
-              }
 
-              changeset '**/esgf_search/**'
-            }
+          changeset '**/esgf_search/**'
+        }
 
-          }
-          environment {
-            CONDA_TOKEN = credentials('conda-token')
-          }
-          steps {
-            container(name: 'buildkit', shell: '/bin/sh') {
-              sh '''#! /bin/sh
+      }
+      environment {
+        CONDA_TOKEN = credentials('conda-token')
+      }
+      steps {
+        container(name: 'buildkit', shell: '/bin/sh') {
+          sh '''#! /bin/sh
 
-make build-search TARGET=publish'''
-            }
-
-          }
+make build-search'''
         }
 
       }
@@ -84,7 +48,7 @@ make build-search TARGET=publish'''
                 return params.FORCE_BUILD_JUPYTER
               }
 
-              changeset 'Dockerfile'
+              changeset 'dockerfiles/nimbus_jupyterlab/Dockerfile'
               changeset '**/esgf_search/**'
             }
 
@@ -93,7 +57,7 @@ make build-search TARGET=publish'''
             container(name: 'buildkit', shell: '/bin/sh') {
               sh '''#! /bin/sh
 
-make build-jupyterhub'''
+make build-jupyterlab REGISTRY=${OUTPUT_REGISTRY}'''
             }
 
           }
@@ -113,7 +77,7 @@ make build-jupyterhub'''
                 return params.FORCE_BUILD_JUPYTER
               }
 
-              changeset 'Dockerfile'
+              changeset 'dockerfiles/nimbus_jupyterlab/Dockerfile'
               changeset '**/esgf_search/**'
             }
 
@@ -122,7 +86,7 @@ make build-jupyterhub'''
             container(name: 'buildkit', shell: '/bin/sh') {
               sh '''#! /bin/sh
 
-make build-jupyterhub'''
+make build-jupyterlab REGISTRY=${OUTPUT_REGISTRY}'''
             }
 
           }
