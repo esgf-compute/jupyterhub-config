@@ -33,6 +33,6 @@ build-search:
 
 build-jupyterlab: IMAGE_NAME = $(if $(REGISTRY),$(REGISTRY)/)nimbus-jupyterlab
 build-jupyterlab: VERSION = 1.0.0
-build-jupyterlab: OUTPUT = --output type=image,name=$(IMAGE_NAME):$(VERSION),push=true
+build-jupyterlab: OUTPUT = --output type=image,name=$(IMAGE_NAME):$(TAG_PREFIX)$(VERSION),push=true
 build-jupyterlab:
 	$(BUILD) build.sh dockerfiles/nimbus_jupyterlab $(CACHE) $(OUTPUT)
