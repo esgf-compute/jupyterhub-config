@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3:4.7.12 as build
+FROM continuumio/miniconda3:4.7.12 as builder
 
 COPY esgf_search/ esgf_search/
 
@@ -7,14 +7,7 @@ WORKDIR esgf_search/
 RUN conda install -y conda-build anaconda-client && \
       conda build -c conda-forge .
 
-FROM build as dev
-
-RUN conda install -c conda-forge --use-local esgf-search jupyterlab && \
-      pip install -e .
-
-ENTRYPOINT jupyter lab --ip 0.0.0.0 --port 8080 --allow-root
-
-FROM build as publish
+FROM builder as publish
 
 ARG CONDA_TOKEN
 ENV CONDA_TOKEN $CONDA_TOKEN

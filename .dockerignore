@@ -1,8 +1,9 @@
-cache/
+cache
+dockerfiles
 .dockerignore
 .git
 .gitignore
 Jenkinsfile
 Makefile
-output/
+output
 README.md
