@@ -57,7 +57,7 @@ make build-search'''
             container(name: 'buildkit', shell: '/bin/sh') {
               sh '''#! /bin/sh
 
-make build-jupyterlab TAG_PREFIX=-dev REGISTRY=${OUTPUT_REGISTRY}'''
+make build-jupyterlab TAG_PREFIX=dev- REGISTRY=${OUTPUT_REGISTRY}'''
             }
 
           }
