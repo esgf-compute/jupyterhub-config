@@ -8,9 +8,6 @@ hub:
     jupyterlab: |
       c.Spawner.cmd = ['jupyter-labhub']
       c.JupyterHub.base_url = '/jupyterhub'
-      c.JupyterHub.template_vars = {
-        'announcement': '',
-      }
       c.KubeSpawner.default_url = '/lab/tree/getting_started.ipynb'
       c.KubeSpawner.fs_gid = 1026
       c.KubeSpawner.image_pull_policy = 'Always'
@@ -50,8 +47,6 @@ hub:
 
 singleuser:
   image:
-    name: aims2.llnl.gov/nimbus-basic
-    tag: latest
     pullPolicy: Always
 
   memory:
