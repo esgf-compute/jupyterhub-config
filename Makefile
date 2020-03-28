@@ -17,6 +17,13 @@ endif
 CACHE = --export-cache type=local,dest=/cache,mode=max \
 				--import-cache type=local,src=/cache
 
+hub-service-configmap:
+	kubectl create configmap hub-services \
+		--from-file=services/announcement/announcement.py \
+		--from-file=services/announcement/page.html \
+		--from-file=services/announcement/admin.html \
+		--dry-run -oyaml | kubectl apply -f -
+
 b2v-search: PART = patch
 b2v-search:
 	bump2version --config-file esgf_search/.bumpversion.cfg $(PART)

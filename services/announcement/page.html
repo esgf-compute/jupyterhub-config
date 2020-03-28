@@ -1,0 +1,20 @@
+{% extends 'templates/page.html' %}
+{% block announcement %}
+<div class='announcement container text-center' role='alert'>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script>
+setInterval(function() {
+  $.get('/jupyterhub/services/announcement', function(data) {
+      if (data['announcement'] != '') {
+        $('.announcement').removeClass('hide').addClass(['alert', 'alert-'+data['level']]).html(data['announcement']);
+      } else {
+        $('.announcement').removeClass('alert alert-info alert-warning alert-danger').addClass('hide').html('');
+      }
+  });
+}, 5000);
+</script>
+{% endblock %}

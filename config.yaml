@@ -1,6 +1,19 @@
 hub:
-  nodeSelector:
-    tier: backend
+  extraVolumes:
+    - name: services
+      configMap:
+        name: hub-services
+
+  extraVolumeMounts:
+    - name: services
+      mountPath: /srv/jupyterhub/announcement.py
+      subPath: announcement.py
+    - name: services
+      mountPath: /srv/jupyterhub/templates/page.html
+      subPath: page.html
+    - name: services
+      mountPath: /srv/jupyterhub/templates/admin.html
+      subPath: admin.html
 
   baseUrl: /jupyterhub
 
@@ -8,13 +21,27 @@ hub:
     jupyterlab: |
       c.Spawner.cmd = ['jupyter-labhub']
       c.JupyterHub.base_url = '/jupyterhub'
+      c.JupyterHub.template_paths = [
+        '/srv/jupyterhub/templates',
+      ]
+      c.JupyterHub.services = [
+        {
+          'name': 'announcement',
+          'url': 'http://hub.development.svc:8888',
+          'command': [sys.executable, '-m', 'announcement', '-a', '/jupyterhub/services/announcement'],
+        },
+      ]
       c.KubeSpawner.default_url = '/lab/tree/getting_started.ipynb'
       c.KubeSpawner.fs_gid = 1026
+      c.KubeSpawner.mem_limit = '32G'
+      c.KubeSpawner.mem_guarantee = '16G'
+      c.KubeSpawner.cpu_limit = 16
+      c.KubeSpawner.cpu_guarantee = 8
       c.KubeSpawner.image_pull_policy = 'Always'
       c.KubeSpawner.init_containers = [
         {
           'name': 'init-user-env',
-          'image': 'aims2.llnl.gov/nimbus-basic:latest',
+          'image': 'nimbus16.llnl.gov:8443/nimbus-jupyterlab:latest',
           'imagePullPolicy': 'Always',
           'command': [
             'bash',
@@ -47,6 +74,8 @@ hub:
 
 singleuser:
   image:
+    name: nimbus16.llnl.gov:8443/nimbus-jupyterlab
+    tag: latest
     pullPolicy: Always
 
   memory:

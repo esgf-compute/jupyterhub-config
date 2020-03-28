@@ -1,0 +1,46 @@
+{% extends 'templates/admin.html' %}
+{% block main %}
+{{ super() }}
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="form-inline">
+        <input type="text" id="announcement" class="form-control" style="width: calc(70%)" placeholder="announcement">
+        <div class="btn-group" style="width: auto" data-toggle="buttons">
+          <label class="btn btn-info active">
+            <input type="radio" name="options" id="info" checked>Info
+          </label>
+          <label class="btn btn-warning">
+            <input type="radio" name="options" id="warning">Warn
+          </label>
+          <label class="btn btn-danger">
+            <input type="radio" name="options" id="danger">Danger
+          </label>
+        </div>
+        <div class="btn-group" style="width: auto" role="group">
+          <input type="button" id="set" class="btn btn-default" value="Set" />
+          <input type="button" id="clear" class="btn btn-default" value="Clear" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script type="text/javascript">
+$('#set').click(function(eventData) {
+    $.post('/jupyterhub/services/announcement', JSON.stringify({
+        announcement: $('#announcement').val(),
+        level: $('input[type=radio]:checked')[0].id,
+    }));
+});
+$('#clear').click(function(eventData) {
+    $.ajax({
+        url: '/jupyterhub/services/announcement',
+        method: 'DELETE',
+    });
+});
+</script>
+{% endblock %}
