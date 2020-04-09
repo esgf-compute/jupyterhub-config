@@ -41,7 +41,7 @@ hub:
       c.KubeSpawner.init_containers = [
         {
           'name': 'init-user-env',
-          'image': 'nimbus16.llnl.gov:8443/nimbus-jupyterlab:latest',
+          'image': 'nimbus16.llnl.gov:8443/default/nimbus-jupyterlab:latest',
           'imagePullPolicy': 'Always',
           'command': [
             'bash',
@@ -74,7 +74,7 @@ hub:
 
 singleuser:
   image:
-    name: nimbus16.llnl.gov:8443/nimbus-jupyterlab
+    name: nimbus16.llnl.gov:8443/default/nimbus-jupyterlab
     tag: latest
     pullPolicy: Always
 
