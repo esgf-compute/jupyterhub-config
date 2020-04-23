@@ -103,4 +103,7 @@ make build-jupyterlab VERSION=latest REGISTRY=${OUTPUT_REGISTRY}'''
     booleanParam(name: 'FORCE_BUILD_CONDA', defaultValue: false, description: 'Force building conda package')
     booleanParam(name: 'FORCE_BUILD_CONDA_PUBLISH', defaultValue: false, description: 'Force building conda package and publish')
   }
+  triggers {
+    upstream(upstreamProjects: 'esgf-compute-api', threshold: hudson.model.Result.SUCCESS)
+  }
 }
