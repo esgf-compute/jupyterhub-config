@@ -1,4 +1,4 @@
-FROM jupyter/minimal-notebook:ad3574d3c5c7
+FROM jupyter/minimal-notebook:29f53f8b9927
 
 RUN conda install -c conda-forge -c cdat \
       nodejs \
