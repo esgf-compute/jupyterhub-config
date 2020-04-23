@@ -38,7 +38,7 @@ build-search:
 	$(BUILD) build.sh dockerfiles/esgf_search $(TARGET) $(CACHE) $(EXTRA)
 
 run-jupyterlab: IMAGE_NAME = $(if $(REGISTRY),$(REGISTRY)/)nimbus-jupyterlab
-run-jupyterlab: VERSION = 1.0.2
+run-jupyterlab: VERSION = 1.0.3
 run-jupyterlab: OUTPUT = --output type=docker,name=$(IMAGE_NAME):$(VERSION),dest=/output/image.tar
 run-jupyterlab:
 	$(BUILD) build.sh dockerfiles/nimbus_jupyterlab $(CACHE) $(OUTPUT)
@@ -48,7 +48,7 @@ run-jupyterlab:
 	docker run -it --rm -p 8888:8888 $(IMAGE_NAME):$(VERSION) jupyter lab --ip 0.0.0.0 --port 8888
 
 build-jupyterlab: IMAGE_NAME = $(if $(REGISTRY),$(REGISTRY)/)nimbus-jupyterlab
-build-jupyterlab: VERSION = 1.0.2
+build-jupyterlab: VERSION = 1.0.3
 build-jupyterlab: OUTPUT = --output type=image,name=$(IMAGE_NAME):$(TAG_PREFIX)$(VERSION)$(TAG_POSTFIX),push=true
 build-jupyterlab:
 	$(BUILD) build.sh dockerfiles/nimbus_jupyterlab $(CACHE) $(OUTPUT)
