@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>esgf &#8212; esgf-search 0.8 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="facets" href="facets.html" />
+    <link rel="prev" title="Welcome to esgf-search’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-esgf_search.esgf">
+<span id="esgf"></span><h1>esgf<a class="headerlink" href="#module-esgf_search.esgf" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="esgf_search.esgf.ESGF">
+<em class="property">class </em><code class="sig-prename descclassname">esgf_search.esgf.</code><code class="sig-name descname">ESGF</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_url</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">facet_query</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">keywords</span></em><span class="sig-paren">)</span><a class="headerlink" href="#esgf_search.esgf.ESGF" title="Permalink to this definition">¶</a></dt>
+<dd><p>ESGF search interface init.</p>
+<p>This provides a simple interface for ESGF search.</p>
+<p>Default keywords and facet query can be set in the constructor. See documentation link below for full list
+of keywords and facets.</p>
+<p>The <cite>format</cite> keyword is disallowed.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">esgf</span> <span class="o">=</span> <span class="n">ESGF</span><span class="p">(</span><span class="n">facet_query</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="s1">&#39;CMIP5&#39;</span><span class="p">},</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;File&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">esgf</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">variable</span><span class="o">=</span><span class="s1">&#39;pr&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="https://earthsystemcog.org/projects/cog/esgf_search_restful_api">https://earthsystemcog.org/projects/cog/esgf_search_restful_api</a> for full documentation of search API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_url</strong> (<em>str</em>) – URL for the ESGF search endpoint (default: <a class="reference external" href="https://esgf-node.llnl.gov/esg-search/search">https://esgf-node.llnl.gov/esg-search/search</a>)</p></li>
+<li><p><strong>search_params</strong> (<em>dict</em><em>, </em><em>optional</em>) – Dictionary of default search parameters, see description above.</p></li>
+<li><p><strong>**kwargs</strong> – Keyword arguments to be passed in search query.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="esgf_search.esgf.ESGF.facet_values">
+<code class="sig-name descname">facet_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#esgf_search.esgf.ESGF.facet_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of possible values for a facet.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">esgf</span> <span class="o">=</span> <span class="n">ESGF</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">esgf</span><span class="o">.</span><span class="n">facet_values</span><span class="p">(</span><span class="s1">&#39;project&#39;</span><span class="p">)</span> 
+<span class="go">[&#39;ACME&#39;, ...]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="esgf_search.esgf.ESGF.next">
+<code class="sig-name descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esgf_search.esgf.ESGF.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves next page of results.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">esgf</span> <span class="o">=</span> <span class="n">ESGF</span><span class="p">(</span><span class="n">facet_query</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="s1">&#39;CMIP5&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">esgf</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">variable</span><span class="o">=</span><span class="s1">&#39;pr&#39;</span><span class="p">,</span> <span class="n">time_frequency</span><span class="o">=</span><span class="s1">&#39;3hr&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">esgf</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="esgf_search.esgf.ESGF.previous">
+<code class="sig-name descname">previous</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esgf_search.esgf.ESGF.previous" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves previous page of results.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">esgf</span> <span class="o">=</span> <span class="n">ESGF</span><span class="p">(</span><span class="n">facet_query</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="s1">&#39;CMIP5&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">esgf</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">variable</span><span class="o">=</span><span class="s1">&#39;pr&#39;</span><span class="p">,</span> <span class="n">time_frequency</span><span class="o">=</span><span class="s1">&#39;3hr&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">esgf</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">esgf</span><span class="o">.</span><span class="n">previous</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="esgf_search.esgf.ESGF.search">
+<code class="sig-name descname">search</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#esgf_search.esgf.ESGF.search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs search.</p>
+<p>Columns containing single value lists will be flattened otherwise the original value will be passed through.</p>
+<p>The URL column of each result will be expanded so each access type has its own column; HTTPServer, GridFTP, Globus, OPENDAP.</p>
+<p>To disable this scrubbing of the output pass the <cite>raw</cite> parameter set to <cite>True</cite>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">esgf</span> <span class="o">=</span> <span class="n">ESGF</span><span class="p">(</span><span class="n">facet_query</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="s1">&#39;CMIP5&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Facets applied with AND, variable=’pr’ and time_frequency=’3hr’</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">esgf</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">variable</span><span class="o">=</span><span class="s1">&#39;pr&#39;</span><span class="p">,</span> <span class="n">time_frequency</span><span class="o">=</span><span class="s1">&#39;3hr&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Same name facets used with AND.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">esgf</span><span class="o">.</span><span class="n">search</span><span class="p">((</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="s1">&#39;pr&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="s1">&#39;prc&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Facets applied with OR, variable=’pr’ or variable=’prw’)</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">esgf</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">variable</span><span class="o">=</span><span class="s1">&#39;pr,prw&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Facet applied with NOT, variable!=’pr’ and variable!=’prc’</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">esgf</span><span class="o">.</span><span class="n">search</span><span class="p">((</span><span class="s1">&#39;variable!&#39;</span><span class="p">,</span> <span class="s1">&#39;pr&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;variable!&#39;</span><span class="p">,</span> <span class="s1">&#39;prc&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>raw</strong> (<em>bool</em>) – Return results without scrubbing.</p></li>
+<li><p><strong>*args</strong> – List of tuples.</p></li>
+<li><p><strong>**kwargs</strong> – Search facets to use.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="esgf_search.esgf.ESGF.facets">
+<em class="property">property </em><code class="sig-name descname">facets</code><a class="headerlink" href="#esgf_search.esgf.ESGF.facets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list of facets.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">esgf</span> <span class="o">=</span> <span class="n">ESGF</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">esgf</span><span class="o">.</span><span class="n">facets</span> 
+<span class="go">[&#39;project&#39;, ...]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="esgf_search.esgf.ESGF.pages">
+<em class="property">property </em><code class="sig-name descname">pages</code><a class="headerlink" href="#esgf_search.esgf.ESGF.pages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of pages.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">esgf</span> <span class="o">=</span> <span class="n">ESGF</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">esgf</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="s1">&#39;CMIP5&#39;</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;pr&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">esgf</span><span class="o">.</span><span class="n">pages</span><span class="p">)</span> 
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">esgf-search</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">esgf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="facets.html">facets</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to esgf-search’s documentation!</a></li>
+      <li>Next: <a href="facets.html" title="next chapter">facets</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Jason Boutte.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/esgf.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
