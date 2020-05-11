@@ -19,10 +19,14 @@ PRESETS = {
 
 
 class FacetError(Exception):
+    """ FacetError.
+    """
     pass
 
 
 class UnknownPresetError(FacetError):
+    """ Unknwon preset error.
+    """
     def __init__(self, key):
         fmt = 'Unknown preset {!s}, available options {!s}'
 
@@ -32,6 +36,11 @@ class UnknownPresetError(FacetError):
 
 
 def _get_config(name):
+    """ Retrieves specific facet preset.
+
+    >>> config = _get_config('cmip5')
+
+    """
     try:
         variant = PRESETS[name.lower()]
     except KeyError as e:
@@ -57,6 +66,14 @@ def _get_config(name):
 
 
 def _load_config(name):
+    """ Loads facet preset to dictionary.
+
+    >>> config = _load_config('cmip5')
+
+    >>> list(config.keys())
+    ['default']
+
+    """
     config = _get_config(name)
 
     data = {}
@@ -78,6 +95,16 @@ def _load_config(name):
 
 
 def get_facets(preset=None, include_counts=False, **kwargs):
+    """ Retrieves facets and possible values.
+
+    >>> facets = get_facets('cmip5')
+
+    Args:
+        preset (str, optional): Preset name.
+        include_counts (bool, optional): Includes the counts for each possible value.
+        **kwargs: Additional query parameters.
+    """
+
     search_params = {
         'format': 'application/solr+json',
         'limit': '0',
@@ -101,7 +128,7 @@ def get_facets(preset=None, include_counts=False, **kwargs):
     try:
         fields = response.json()['facet_counts']['facet_fields']
     except KeyError:
-        return None
+        return dict()
 
     if not include_counts:
         fields = dict((x, y[::2]) for x, y in fields.items())
