@@ -70,7 +70,7 @@ class UnknownFacetValueError(SearchError):
 # https://earthsystemcog.org/projects/cog/esgf_search_restful_api
 class ESGF(object):
     def __init__(self, base_url=None, facet_query=None, **keywords):
-        """ ESGF search interface.
+        """ ESGF search interface init.
 
         This provides a simple interface for ESGF search.
 
@@ -86,7 +86,7 @@ class ESGF(object):
         See https://earthsystemcog.org/projects/cog/esgf_search_restful_api for full documentation of search API.
 
         Args:
-            base_url (str): URL for the ESGF search endpoint (default: 'https://esgf-ndoe.llnl.gov/esg-search/search')
+            base_url (str): URL for the ESGF search endpoint (default: https://esgf-node.llnl.gov/esg-search/search)
             search_params (dict, optional): Dictionary of default search parameters, see description above.
             **kwargs: Keyword arguments to be passed in search query.
         """
@@ -316,6 +316,14 @@ class ESGF(object):
 
 class CMIP5(ESGF):
     def __init__(self, **kwargs):
+        """ ESGF search configured for CMIP5 project.
+
+        >>> esgf = CMIP6()
+
+        >>> esgf.default_facets
+        {'project': 'CMIP5', 'query': '*'}
+
+        """
         facets = kwargs.pop('facets', {})
 
         facets.update(project='CMIP5')
@@ -324,15 +332,15 @@ class CMIP5(ESGF):
 
 
 class CMIP6(ESGF):
-    """ ESGF search configured for CMIP6 project.
-
-    >>> esgf = CMIP6()
-
-    >>> esgf.default_facets
-    {'project': 'CMIP6', 'query': '*'}
-
-    """
     def __init__(self, **kwargs):
+        """ ESGF search configured for CMIP6 project.
+
+        >>> esgf = CMIP6()
+
+        >>> esgf.default_facets
+        {'project': 'CMIP6', 'query': '*'}
+
+        """
         facets = kwargs.pop('facets', {})
 
         facets.update(project='CMIP6')
