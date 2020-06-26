@@ -19,7 +19,6 @@ hub:
 
   extraConfig:
     jupyterlab: |
-      c.Spawner.cmd = ['jupyter-labhub']
       c.JupyterHub.base_url = '/jupyterhub'
       c.JupyterHub.template_paths = [
         '/srv/jupyterhub/templates',
