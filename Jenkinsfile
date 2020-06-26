@@ -26,72 +26,67 @@ pipeline {
         container(name: 'buildkit', shell: '/bin/sh') {
           sh '''#! /bin/sh
 
-make build-search'''
+make build-search CONDA_TOKEN=${CONDA_TOKEN}'''
+        }
+
+      }
+    }
+
+    stage('Development Container') {
+      agent {
+        node {
+          label 'jenkins-buildkit'
+        }
+
+      }
+      when {
+        branch 'devel'
+        anyOf {
+          expression {
+            return params.FORCE_BUILD_JUPYTER
+          }
+
+          changeset 'dockerfiles/nimbus_jupyterlab/Dockerfile'
+          changeset '**/esgf_search/**'
+        }
+
+      }
+      steps {
+        container(name: 'buildkit', shell: '/bin/sh') {
+          sh '''#! /bin/sh
+TAG="$(cat dockerfiles/nimbus-jupyterlab/VERSION)_dev"
+
+make build-jupyterlab REGISTRY=${REGISTRY_PRIVATE} VERSION=${TAG}'''
         }
 
       }
     }
 
     stage('Build Container') {
-      parallel {
-        stage('Development') {
-          agent {
-            node {
-              label 'jenkins-buildkit'
-            }
-
-          }
-          when {
-            branch 'devel'
-            anyOf {
-              expression {
-                return params.FORCE_BUILD_JUPYTER
-              }
-
-              changeset 'dockerfiles/nimbus_jupyterlab/Dockerfile'
-              changeset '**/esgf_search/**'
-            }
-
-          }
-          steps {
-            container(name: 'buildkit', shell: '/bin/sh') {
-              sh '''#! /bin/sh
-
-make build-jupyterlab TAG_POSTFIX=-dev REGISTRY=${OUTPUT_REGISTRY}'''
-            }
-
-          }
+      agent {
+        node {
+          label 'jenkins-buildkit'
         }
 
-        stage('Latest') {
-          agent {
-            node {
-              label 'jenkins-buildkit'
-            }
-
+      }
+      when {
+        branch 'master'
+        anyOf {
+          expression {
+            return params.FORCE_BUILD_JUPYTER
           }
-          when {
-            branch 'master'
-            anyOf {
-              expression {
-                return params.FORCE_BUILD_JUPYTER
-              }
 
-              changeset 'dockerfiles/nimbus_jupyterlab/Dockerfile'
-              changeset '**/esgf_search/**'
-            }
+          changeset 'dockerfiles/nimbus_jupyterlab/Dockerfile'
+          changeset '**/esgf_search/**'
+        }
 
-          }
-          steps {
-            container(name: 'buildkit', shell: '/bin/sh') {
-              sh '''#! /bin/sh
+      }
+      steps {
+        container(name: 'buildkit', shell: '/bin/sh') {
+          sh '''#! /bin/sh
+TAG="$(cat dockerfiles/nimbus-jupyterlab/VERSION)
 
-make build-jupyterlab REGISTRY=${OUTPUT_REGISTRY}
-
-make build-jupyterlab VERSION=latest REGISTRY=${OUTPUT_REGISTRY}'''
-            }
-
-          }
+make build-jupyterlab REGISTRY=${REGISTRY_PRIVATE} VERSION=${TAG}'''
         }
 
       }
@@ -101,6 +96,5 @@ make build-jupyterlab VERSION=latest REGISTRY=${OUTPUT_REGISTRY}'''
   parameters {
     booleanParam(name: 'FORCE_BUILD_JUPYTER', defaultValue: false, description: 'Force building container')
     booleanParam(name: 'FORCE_BUILD_CONDA', defaultValue: false, description: 'Force building conda package')
-    booleanParam(name: 'FORCE_BUILD_CONDA_PUBLISH', defaultValue: false, description: 'Force building conda package and publish')
   }
 }
