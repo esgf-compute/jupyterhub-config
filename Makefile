@@ -14,8 +14,10 @@ else
 BUILD = $(SHELL)
 endif
 
-CACHE = --export-cache type=local,dest=/cache,mode=max \
-				--import-cache type=local,src=/cache
+CACHE_PATH ?= /cache
+
+CACHE = --export-cache type=local,dest=$(CACHE_PATH),mode=max \
+				--import-cache type=local,src=$(CACHE_PATH)
 
 hub-service-configmap:
 	kubectl create configmap hub-services \
@@ -38,7 +40,7 @@ build-search:
 	$(BUILD) build.sh dockerfiles/esgf_search $(TARGET) $(CACHE) $(EXTRA)
 
 run-jupyterlab: IMAGE_NAME = $(if $(REGISTRY),$(REGISTRY)/)nimbus-jupyterlab
-run-jupyterlab: VERSION = 1.0.3
+run-jupyterlab: VERSION = $(shell cat dockerfiles/nimbus_jupyterlab/VERSION)
 run-jupyterlab: OUTPUT = --output type=docker,name=$(IMAGE_NAME):$(VERSION),dest=/output/image.tar
 run-jupyterlab:
 	$(BUILD) build.sh dockerfiles/nimbus_jupyterlab $(CACHE) $(OUTPUT)
@@ -48,7 +50,7 @@ run-jupyterlab:
 	docker run -it --rm -p 8888:8888 $(IMAGE_NAME):$(VERSION) jupyter lab --ip 0.0.0.0 --port 8888
 
 build-jupyterlab: IMAGE_NAME = $(if $(REGISTRY),$(REGISTRY)/)nimbus-jupyterlab
-build-jupyterlab: VERSION = 1.0.3
+build-jupyterlab: VERSION = $(shell cat dockerfiles/nimbus_jupyterlab/VERSION)
 build-jupyterlab: OUTPUT = --output type=image,name=$(IMAGE_NAME):$(TAG_PREFIX)$(VERSION)$(TAG_POSTFIX),push=true
 build-jupyterlab:
 	$(BUILD) build.sh dockerfiles/nimbus_jupyterlab $(CACHE) $(OUTPUT)
