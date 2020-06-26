@@ -54,7 +54,7 @@ make build-search CONDA_TOKEN=${CONDA_TOKEN}'''
       steps {
         container(name: 'buildkit', shell: '/bin/sh') {
           sh '''#! /bin/sh
-TAG="$(cat dockerfiles/nimbus-jupyterlab/VERSION)_dev"
+TAG="$(cat dockerfiles/nimbus_jupyterlab/VERSION)_dev"
 
 make build-jupyterlab REGISTRY=${REGISTRY_PRIVATE} VERSION=${TAG}'''
         }
@@ -62,7 +62,7 @@ make build-jupyterlab REGISTRY=${REGISTRY_PRIVATE} VERSION=${TAG}'''
       }
     }
 
-    stage('Build Container') {
+    stage('Release Container') {
       agent {
         node {
           label 'jenkins-buildkit'
@@ -84,7 +84,7 @@ make build-jupyterlab REGISTRY=${REGISTRY_PRIVATE} VERSION=${TAG}'''
       steps {
         container(name: 'buildkit', shell: '/bin/sh') {
           sh '''#! /bin/sh
-TAG="$(cat dockerfiles/nimbus-jupyterlab/VERSION)
+TAG="$(cat dockerfiles/nimbus_jupyterlab/VERSION)
 
 make build-jupyterlab REGISTRY=${REGISTRY_PRIVATE} VERSION=${TAG}'''
         }
