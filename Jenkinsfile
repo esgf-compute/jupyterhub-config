@@ -1,5 +1,8 @@
 pipeline {
   agent none
+  environment {
+    REGISTRY = "${env.REGISTRY_PRIVATE}"
+  }
   stages {
     stage('Publish Search') {
       agent {
@@ -25,44 +28,62 @@ pipeline {
       steps {
         container(name: 'buildkit', shell: '/bin/sh') {
           sh '''#! /bin/sh
-
-make build-search CONDA_TOKEN=${CONDA_TOKEN}'''
+make build-search CONDA_TOKEN=${CONDA_TOKEN}
+          '''
         }
 
       }
     }
 
-    stage('Development Container') {
-      agent {
-        node {
-          label 'jenkins-buildkit'
-        }
-
-      }
+    stage('Development Containers') {
+      agent none
       when {
         branch 'devel'
-        anyOf {
-          expression {
-            return params.FORCE_BUILD_JUPYTER
-          }
-
-          changeset 'dockerfiles/nimbus_jupyterlab/Dockerfile'
-          changeset '**/esgf_search/**'
-        }
-
       }
-      steps {
-        container(name: 'buildkit', shell: '/bin/sh') {
-          sh '''#! /bin/sh
-TAG="$(cat dockerfiles/nimbus_jupyterlab/VERSION)_dev"
-
-make build-jupyterlab REGISTRY=${REGISTRY_PRIVATE} VERSION=${TAG}'''
+      parallel {
+        stage('nimbus-jupyter') {
+          agent {
+            node {
+              label 'jenkins-buildkit'
+            }
+          }
+          when {
+            anyOf {
+              changeset 'dockerfiles/nimbus_jupyterlab/Dockerfile'
+              changeset '**/esgf_search/**'
+            }
+          }
+          steps {
+            container(name: 'buildkit', shell: '/bin/sh') {
+              sh '''#! /bin/sh
+make build-jupyterlab VERSION=$(cat dockerfiles/nimbus_jupyter/VERSION)-dev
+              '''
+            }
+          }
         }
-
+        stage('nimbus-dev') {
+          agent {
+            node {
+              label 'jenkins-buildkit'
+            }
+          }
+          when {
+            anyOf {
+              changeset 'dockerfiles/nimbus_dev/Dockerfile'
+            }
+          }
+          steps {
+            container(name: 'buildkit', shell: '/bin/sh') {
+              sh '''#! /bin/sh
+make build-dev
+              '''
+            }
+          }
+        }
       }
     }
 
-    stage('Release Container') {
+    stage('Release Containers') {
       agent {
         node {
           label 'jenkins-buildkit'
@@ -72,10 +93,6 @@ make build-jupyterlab REGISTRY=${REGISTRY_PRIVATE} VERSION=${TAG}'''
       when {
         branch 'master'
         anyOf {
-          expression {
-            return params.FORCE_BUILD_JUPYTER
-          }
-
           changeset 'dockerfiles/nimbus_jupyterlab/Dockerfile'
           changeset '**/esgf_search/**'
         }
@@ -84,17 +101,12 @@ make build-jupyterlab REGISTRY=${REGISTRY_PRIVATE} VERSION=${TAG}'''
       steps {
         container(name: 'buildkit', shell: '/bin/sh') {
           sh '''#! /bin/sh
-TAG="$(cat dockerfiles/nimbus_jupyterlab/VERSION)
-
-make build-jupyterlab REGISTRY=${REGISTRY_PRIVATE} VERSION=${TAG}'''
+make build-jupyterlab
+          '''
         }
 
       }
     }
 
-  }
-  parameters {
-    booleanParam(name: 'FORCE_BUILD_JUPYTER', defaultValue: false, description: 'Force building container')
-    booleanParam(name: 'FORCE_BUILD_CONDA', defaultValue: false, description: 'Force building conda package')
   }
 }
