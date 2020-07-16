@@ -36,7 +36,6 @@ make build-search CONDA_TOKEN=${CONDA_TOKEN}
     }
 
     stage('Development Containers') {
-      agent none
       when {
         branch 'devel'
       }
