@@ -46,12 +46,6 @@ make build-search CONDA_TOKEN=${CONDA_TOKEN}
               label 'jenkins-buildkit'
             }
           }
-          when {
-            anyOf {
-              changeset 'dockerfiles/nimbus_jupyterlab/Dockerfile'
-              changeset '**/esgf_search/**'
-            }
-          }
           steps {
             container(name: 'buildkit', shell: '/bin/sh') {
               sh '''#! /bin/sh
@@ -64,11 +58,6 @@ make build-jupyterlab VERSION=$(cat dockerfiles/nimbus_jupyter/VERSION)-dev
           agent {
             node {
               label 'jenkins-buildkit'
-            }
-          }
-          when {
-            anyOf {
-              changeset 'dockerfiles/nimbus_dev/Dockerfile'
             }
           }
           steps {
