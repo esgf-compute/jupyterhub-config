@@ -49,7 +49,7 @@ make build-search CONDA_TOKEN=${CONDA_TOKEN}
           steps {
             container(name: 'buildkit', shell: '/bin/sh') {
               sh '''#! /bin/sh
-make build-jupyterlab VERSION=$(cat dockerfiles/nimbus_jupyter/VERSION)-dev
+make build-jupyterlab VERSION=$(cat dockerfiles/nimbus_jupyterlab/VERSION)-dev
               '''
             }
           }
