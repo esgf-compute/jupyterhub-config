@@ -14,14 +14,14 @@ else
 BUILD = $(SHELL)
 endif
 
-CACHE_PATH ?= /cache
-OUTPUT_PATH ?= /output
+CACHE_PATH = $(PWD)/cache
+OUTPUT_PATH = $(PWD)/output
 
 CACHE = --export-cache type=local,dest=$(CACHE_PATH),mode=max \
 				--import-cache type=local,src=$(CACHE_PATH)
 
-OUTPUT_LOCAL = --output type=image,name=$(IMAGE_NAME):$(VERSION),push=true
-OUTPUT_REGISTRY = --output type=docker,name=$(IMAGE_NAME):$(VERSION),dest=$(OUTPUT_PATH)/image.tar
+OUTPUT_REGISTRY = --output type=image,name=$(IMAGE_NAME):$(VERSION),push=true
+OUTPUT_LOCAL = --output type=docker,name=$(IMAGE_NAME):$(VERSION),dest=/output/image.tar
 
 OUTPUT = $(if $(REGISTRY),$(OUTPUT_REGISTRY),$(OUTPUT_LOCAL))
 
