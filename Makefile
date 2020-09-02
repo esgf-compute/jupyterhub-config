@@ -35,13 +35,13 @@ build-search:
 build-jupyterlab: IMAGE_NAME := $(if $(REGISTRY),$(REGISTRY)/)nimbus-jupyterlab
 build-jupyterlab: VERSION ?= $(shell cat dockerfiles/nimbus_jupyterlab/VERSION)
 build-jupyterlab:
-	$(BUILD) build.sh dockerfiles/nimbus_jupyterlab $(CACHE) $(OUTPUT) 
+	$(BUILD) build.sh dockerfiles/nimbus_jupyterlab $(CACHE) $(OUTPUT) $(BUILD_EXTRA)
 	
 	$(EXTRA)
 
 build-dev: IMAGE_NAME := $(if $(REGISTRY),$(REGISTRY)/)nimbus-dev
 build-dev: VERSION ?= $(shell cat dockerfiles/nimbus_dev/VERSION)
 build-dev:
-	$(BUILD) build.sh dockerfiles/nimbus_dev $(CACHE) $(OUTPUT)
+	$(BUILD) build.sh dockerfiles/nimbus_dev $(CACHE) $(OUTPUT) $(BUILD_EXTRA)
 	
 	$(EXTRA)

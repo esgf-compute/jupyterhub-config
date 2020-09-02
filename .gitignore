@@ -1,3 +1,6 @@
+*.pem
+*.crt
+
 *.yaml
 
 .ipynb_checkpoints/
