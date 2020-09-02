@@ -63,6 +63,7 @@ make build-jupyterlab VERSION=$(cat dockerfiles/nimbus_jupyterlab/VERSION)-dev
           steps {
             container(name: 'buildkit', shell: '/bin/sh') {
               sh '''#! /bin/sh
+cp /ssl/*.crt .
 make build-dev
               '''
             }
