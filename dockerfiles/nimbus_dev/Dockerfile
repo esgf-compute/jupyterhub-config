@@ -7,8 +7,7 @@ RUN conda install -c conda-forge -y nodejs xeus-python=0.8.0 ptvsd ipyleaflet cu
       pip install python-language-server[all] && \
       conda clean -a -y 
 
-COPY *.pem /usr/local/share/ca-certificate/
-COPY *.crt /usr/local/share/ca-certificate/
+COPY *.crt /usr/local/share/ca-certificates/
 
 USER root
 
