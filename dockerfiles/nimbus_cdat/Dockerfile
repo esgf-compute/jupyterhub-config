@@ -1,4 +1,5 @@
-FROM jupyter/base-notebook:lab-2.1.3
+ARG BASE_CONTAINER
+FROM $BASE_CONTAINER
 
 RUN conda install -c conda-forge -c cdat \
       nodejs \
