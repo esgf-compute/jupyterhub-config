@@ -42,65 +42,67 @@ make build-search CONDA_TOKEN=${CONDA_TOKEN}
           branch 'devel'
         }
       }
-      stage('nimbus-base') {
-        agent {
-          node {
-            label 'jenkins-buildkit'
-          }
-        } 
-        when {
-          changeset 'dockerfiles/nimbus_base/*'
-        }
-        steps {
-          container(name: 'buildkit', shell: '/bin/sh') {
-            sh 'cp /ssl/*.crt .'
-
-            sh '''#! /bin/sh
-make build-base
-            '''
-        }
-      }
-      stage('nimbus-cdat') {
-        agent {
-          node {
-            label 'jenkins-buildkit'
-          }
-        }
-        when {
-          anyOf {
+      stages {
+        stage('nimbus-base') {
+          agent {
+            node {
+              label 'jenkins-buildkit'
+            }
+          } 
+          when {
             changeset 'dockerfiles/nimbus_base/*'
-            changeset 'dockerfiles/nimbus_cdat/*'
           }
-        }
-        steps {
-          container(name: 'buildkit', shell: '/bin/sh') {
-            sh 'cp /ssl/*.crt .'
+          steps {
+            container(name: 'buildkit', shell: '/bin/sh') {
+              sh 'cp /ssl/*.crt .'
 
-            sh '''#! /bin/sh
-make build-cat
-            '''
+              sh '''#! /bin/sh
+  make build-base
+              '''
           }
         }
-      }
-      stage('nimbus-dev') {
-        agent {
-          node {
-            label 'jenkins-buildkit'
+        stage('nimbus-cdat') {
+          agent {
+            node {
+              label 'jenkins-buildkit'
+            }
           }
-        }
-        when {
-          anyOf {
-            changeset 'dockerfiles/nimbus_base/*'
-            changeset 'dockerfiles/nimbus_dev/*'
+          when {
+            anyOf {
+              changeset 'dockerfiles/nimbus_base/*'
+              changeset 'dockerfiles/nimbus_cdat/*'
+            }
           }
-        }
-        steps {
-          container(name: 'buildkit', shell: '/bin/sh') {
-            sh 'cp /ssl/*.crt .'
+          steps {
+            container(name: 'buildkit', shell: '/bin/sh') {
+              sh 'cp /ssl/*.crt .'
 
-            sh '''#! /bin/sh
-make build-dev
-            '''
+              sh '''#! /bin/sh
+  make build-cat
+              '''
+            }
+          }
+        }
+        stage('nimbus-dev') {
+          agent {
+            node {
+              label 'jenkins-buildkit'
+            }
+          }
+          when {
+            anyOf {
+              changeset 'dockerfiles/nimbus_base/*'
+              changeset 'dockerfiles/nimbus_dev/*'
+            }
+          }
+          steps {
+            container(name: 'buildkit', shell: '/bin/sh') {
+              sh 'cp /ssl/*.crt .'
+
+              sh '''#! /bin/sh
+  make build-dev
+              '''
+            }
           }
         }
       }
