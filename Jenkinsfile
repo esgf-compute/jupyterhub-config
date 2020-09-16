@@ -59,6 +59,7 @@ make build-search CONDA_TOKEN=${CONDA_TOKEN}
               sh '''#! /bin/sh
   make build-base
               '''
+            }
           }
         }
         stage('nimbus-cdat') {
