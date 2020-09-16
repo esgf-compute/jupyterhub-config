@@ -1,11 +1,15 @@
+GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
+
+POST_VERSION := $(if $(findstring $(GIT_BRANCH),devel),-dev)
+
 CACHE_PATH := $(PWD)/cache
 CACHE_ARGS = --export-cache type=local,dest=$(CACHE_PATH),mode=max \
 						 --import-cache type=local,src=$(CACHE_PATH)
 
 OUTPUT_PATH := $(PWD)/output
 OUTPUT_REGISTRY := $(if $(REGISTRY),$(REGISTRY)/)
-OUTPUT_REGISTRY_ARGS = --output type=image,name=$(OUTPUT_REGISTRY)$(IMAGE_NAME):$(VERSION),push=true
-OUTPUT_LOCAL_ARGS = --output type=docker,name=$(OUTPUT_REGISTRY)$(IMAGE_NAME):$(VERSION),dest=$(OUTPUT_PATH)/image.tar
+OUTPUT_REGISTRY_ARGS = --output type=image,name=$(OUTPUT_REGISTRY)$(IMAGE_NAME):$(VERSION)$(POST_VERSION),push=true
+OUTPUT_LOCAL_ARGS = --output type=docker,name=$(OUTPUT_REGISTRY)$(IMAGE_NAME):$(VERSION)$(POST_VERSION),dest=$(OUTPUT_PATH)/image.tar
 OUTPUT_ARGS = $(if $(REGISTRY),$(OUTPUT_REGISTRY_ARGS),$(OUTPUT_LOCAL_ARGS))
 
 ifeq ($(shell which buildctl-daemonless.sh),)

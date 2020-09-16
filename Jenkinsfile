@@ -35,21 +35,48 @@ make build-search CONDA_TOKEN=${CONDA_TOKEN}
       }
     }
 
-    stage('Development Containers') {
+    stage('Containers') {
       when {
-        branch 'devel'
+        anyOf {
+          branch 'master'
+          branch 'devel'
+        }
+      }
+      stage('nimbus-base') {
+        agent {
+          node {
+            label 'jenkins-buildkit'
+          }
+        } 
+        when {
+          changeset 'dockerfiles/nimbus_base/*'
+        }
+        steps {
+          container(name: 'buildkit', shell: '/bin/sh') {
+            sh 'cp /ssl/*.crt .'
+
+            sh '''#! /bin/sh
+make build-base
+            '''
+        }
       }
       parallel {
-        stage('nimbus-jupyter') {
+        stage('nimbus-cdat') {
           agent {
             node {
               label 'jenkins-buildkit'
             }
           }
+          when {
+            changeset 'dockerfiles/nimbus_base/*'
+            changeset 'dockerfiles/nimbus_cdat/*'
+          }
           steps {
             container(name: 'buildkit', shell: '/bin/sh') {
+              sh 'cp /ssl/*.crt .'
+
               sh '''#! /bin/sh
-make build-jupyterlab VERSION=$(cat dockerfiles/nimbus_jupyterlab/VERSION)-dev
+make build-cat
               '''
             }
           }
@@ -60,10 +87,15 @@ make build-jupyterlab VERSION=$(cat dockerfiles/nimbus_jupyterlab/VERSION)-dev
               label 'jenkins-buildkit'
             }
           }
+          when {
+            changeset 'dockerfiles/nimbus_base/*'
+            changeset 'dockerfiles/nimbus_dev/*'
+          }
           steps {
             container(name: 'buildkit', shell: '/bin/sh') {
+              sh 'cp /ssl/*.crt .'
+
               sh '''#! /bin/sh
-cp /ssl/*.crt .
 make build-dev
               '''
             }
@@ -71,31 +103,5 @@ make build-dev
         }
       }
     }
-
-    stage('Release Containers') {
-      agent {
-        node {
-          label 'jenkins-buildkit'
-        }
-
-      }
-      when {
-        branch 'master'
-        anyOf {
-          changeset 'dockerfiles/nimbus_jupyterlab/Dockerfile'
-          changeset '**/esgf_search/**'
-        }
-
-      }
-      steps {
-        container(name: 'buildkit', shell: '/bin/sh') {
-          sh '''#! /bin/sh
-make build-jupyterlab
-          '''
-        }
-
-      }
-    }
-
   }
 }
