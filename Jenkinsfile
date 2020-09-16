@@ -67,8 +67,10 @@ make build-base
           }
         }
         when {
-          changeset 'dockerfiles/nimbus_base/*'
-          changeset 'dockerfiles/nimbus_cdat/*'
+          anyOf {
+            changeset 'dockerfiles/nimbus_base/*'
+            changeset 'dockerfiles/nimbus_cdat/*'
+          }
         }
         steps {
           container(name: 'buildkit', shell: '/bin/sh') {
@@ -87,8 +89,10 @@ make build-cat
           }
         }
         when {
-          changeset 'dockerfiles/nimbus_base/*'
-          changeset 'dockerfiles/nimbus_dev/*'
+          anyOf {
+            changeset 'dockerfiles/nimbus_base/*'
+            changeset 'dockerfiles/nimbus_dev/*'
+          }
         }
         steps {
           container(name: 'buildkit', shell: '/bin/sh') {
