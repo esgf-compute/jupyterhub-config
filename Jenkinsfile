@@ -60,44 +60,46 @@ make build-base
             '''
         }
       }
-      parallel {
-        stage('nimbus-cdat') {
-          agent {
-            node {
-              label 'jenkins-buildkit'
+      stage('Containers') {
+        parallel {
+          stage('nimbus-cdat') {
+            agent {
+              node {
+                label 'jenkins-buildkit'
+              }
             }
-          }
-          when {
-            changeset 'dockerfiles/nimbus_base/*'
-            changeset 'dockerfiles/nimbus_cdat/*'
-          }
-          steps {
-            container(name: 'buildkit', shell: '/bin/sh') {
-              sh 'cp /ssl/*.crt .'
+            when {
+              changeset 'dockerfiles/nimbus_base/*'
+              changeset 'dockerfiles/nimbus_cdat/*'
+            }
+            steps {
+              container(name: 'buildkit', shell: '/bin/sh') {
+                sh 'cp /ssl/*.crt .'
 
-              sh '''#! /bin/sh
-make build-cat
-              '''
+                sh '''#! /bin/sh
+  make build-cat
+                '''
+              }
             }
           }
-        }
-        stage('nimbus-dev') {
-          agent {
-            node {
-              label 'jenkins-buildkit'
+          stage('nimbus-dev') {
+            agent {
+              node {
+                label 'jenkins-buildkit'
+              }
             }
-          }
-          when {
-            changeset 'dockerfiles/nimbus_base/*'
-            changeset 'dockerfiles/nimbus_dev/*'
-          }
-          steps {
-            container(name: 'buildkit', shell: '/bin/sh') {
-              sh 'cp /ssl/*.crt .'
+            when {
+              changeset 'dockerfiles/nimbus_base/*'
+              changeset 'dockerfiles/nimbus_dev/*'
+            }
+            steps {
+              container(name: 'buildkit', shell: '/bin/sh') {
+                sh 'cp /ssl/*.crt .'
 
-              sh '''#! /bin/sh
-make build-dev
-              '''
+                sh '''#! /bin/sh
+  make build-dev
+                '''
+              }
             }
           }
         }
