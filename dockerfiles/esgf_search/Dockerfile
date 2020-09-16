@@ -1,5 +1,5 @@
-ARG CODNA_VER=4.7.12
-FROM continuumio/miniconda3:${CONDA_VER}
+ARG BASE_CONTAINER
+FROM $BASE_CONTAINER
 
 COPY esgf_search/ esgf_search/
 

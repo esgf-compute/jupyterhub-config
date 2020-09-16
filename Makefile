@@ -32,10 +32,10 @@ NIMBUS_BASE_VERSION ?= $(shell cat dockerfiles/nimbus_base/VERSION)
 NIMBUS_BASE_CONTAINER := jupyter/base-notebook:lab-2.2.5
 
 .PHONY: build-search
-build-search: TARGET = --opt target=publish
-build-search: EXTRA = --opt build-arg:CONDA_TOKEN=$(CONDA_TOKEN)
 build-search:
-	$(BUILD) build.sh dockerfiles/esgf_search $(TARGET) $(CACHE) $(EXTRA)
+	$(BUILD) build.sh dockerfiles/esgf_search $(CACHE) \
+		--opt build-arg:CONDA_TOKEN=$(CONDA_TOKEN) \
+		--opt build-arg:BASE_CONTAINER=continuumio/miniconda3:4.7.12
 
 .PHONY: build-base
 build-base: IMAGE_NAME := nimbus-base
