@@ -98,7 +98,7 @@ make build-cdat
           }
           when {
             anyOf {
-              branch 'mater'
+              branch 'master'
               anyOf {
                 changeset 'dockerfiles/nimbus_base/*'
                 changeset 'dockerfiles/nimbus_dev/*'
