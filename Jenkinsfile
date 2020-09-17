@@ -50,7 +50,10 @@ make build-search CONDA_TOKEN=${CONDA_TOKEN}
             }
           } 
           when {
-            changeset 'dockerfiles/nimbus_base/*'
+            anyOf {
+              branch 'master'
+              changeset 'dockerfiles/nimbus_base/*'
+            }
           }
           steps {
             container(name: 'buildkit', shell: '/bin/sh') {
@@ -70,8 +73,11 @@ make build-search CONDA_TOKEN=${CONDA_TOKEN}
           }
           when {
             anyOf {
-              changeset 'dockerfiles/nimbus_base/*'
-              changeset 'dockerfiles/nimbus_cdat/*'
+              branch 'master'
+              anyOf {
+                changeset 'dockerfiles/nimbus_base/*'
+                changeset 'dockerfiles/nimbus_cdat/*'
+              }
             }
           }
           steps {
@@ -92,8 +98,11 @@ make build-search CONDA_TOKEN=${CONDA_TOKEN}
           }
           when {
             anyOf {
-              changeset 'dockerfiles/nimbus_base/*'
-              changeset 'dockerfiles/nimbus_dev/*'
+              branch 'mater'
+              anyOf {
+                changeset 'dockerfiles/nimbus_base/*'
+                changeset 'dockerfiles/nimbus_dev/*'
+              }
             }
           }
           steps {
