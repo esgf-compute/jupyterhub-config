@@ -60,7 +60,7 @@ make build-search CONDA_TOKEN=${CONDA_TOKEN}
               sh 'cp /ssl/*.crt .'
 
               sh '''#! /bin/sh
-  make build-base
+make build-base
               '''
             }
           }
@@ -85,7 +85,7 @@ make build-search CONDA_TOKEN=${CONDA_TOKEN}
               sh 'cp /ssl/*.crt .'
 
               sh '''#! /bin/sh
-  make build-cat
+make build-cdat
               '''
             }
           }
@@ -110,7 +110,7 @@ make build-search CONDA_TOKEN=${CONDA_TOKEN}
               sh 'cp /ssl/*.crt .'
 
               sh '''#! /bin/sh
-  make build-dev
+make build-dev
               '''
             }
           }
