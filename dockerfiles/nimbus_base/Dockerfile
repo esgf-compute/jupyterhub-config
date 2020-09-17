@@ -1,5 +1,5 @@
-ARG BASE_CONTAINER
-FROM $BASE_CONTAINER
+ARG BASE_IMAGE
+FROM $BASE_IMAGE
 
 COPY *.crt /usr/local/share/ca-certificates/
 

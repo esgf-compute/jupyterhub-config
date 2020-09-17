@@ -7,10 +7,10 @@ CACHE_ARGS = --export-cache type=local,dest=$(CACHE_PATH),mode=max \
 						 --import-cache type=local,src=$(CACHE_PATH)
 
 OUTPUT_PATH := $(PWD)/output
-OUTPUT_REGISTRY := $(if $(REGISTRY),$(REGISTRY)/)
-OUTPUT_REGISTRY_ARGS = --output type=image,name=$(OUTPUT_REGISTRY)$(IMAGE_NAME):$(VERSION)$(POST_VERSION),push=true
-OUTPUT_LOCAL_ARGS = --output type=docker,name=$(OUTPUT_REGISTRY)$(IMAGE_NAME):$(VERSION)$(POST_VERSION),dest=$(OUTPUT_PATH)/image.tar
-OUTPUT_ARGS = $(if $(REGISTRY),$(OUTPUT_REGISTRY_ARGS),$(OUTPUT_LOCAL_ARGS))
+OUTPUT_IMAGE = $(if $(REGISTRY),$(REGISTRY)/)$(IMAGE_NAME):$(VERSION)$(POST_VERSION)
+OUTPUT_REGISTRY_ARGS = --output type=image,name=$(OUTPUT_IMAGE),push=true
+OUTPUT_LOCAL_ARGS = --output type=docker,name=$(OUTPUT_IMAGE),dest=$(OUTPUT_PATH)/image.tar
+OUTPUT_ARGS = $(if $(findstring true,$(OUTPUT_LOCAL)),$(OUTPUT_LOCAL_ARGS),$(OUTPUT_REGISTRY_ARGS))
 
 ifeq ($(shell which buildctl-daemonless.sh),)
 BUILD = docker run \
@@ -26,23 +26,24 @@ else
 BUILD = $(SHELL)
 endif
 
-POST_BUILD = $(if $(REGISTRY),,cat $(OUTPUT_PATH)/image.tar | docker load)
+POST_BUILD = $(if $(findstring true,$(OUTPUT_LOCAL)),cat $(OUTPUT_PATH)/image.tar | docker load,)
 
-NIMBUS_BASE_VERSION ?= $(shell cat dockerfiles/nimbus_base/VERSION)
-NIMBUS_BASE_CONTAINER := jupyter/base-notebook:lab-2.2.5
+BASE_IMAGE_TAG := lab-2.2.5
+BASE_IMAGE := jupyter/base-notebook:$(BASE_IMAGE_TAG)
+
+NIMBUS_BASE_TAG := $(shell cat dockerfiles/nimbus_base/VERSION)
+NIMBUS_BASE := $(REGISTRY)/nimbus-base:$(NIMBUS_BASE_TAG)
 
 .PHONY: build-search
 build-search:
 	$(BUILD) build.sh dockerfiles/esgf_search $(CACHE) \
 		--opt build-arg:CONDA_TOKEN=$(CONDA_TOKEN) \
-		--opt build-arg:BASE_CONTAINER=continuumio/miniconda3:4.7.12
+		--opt build-arg:BASE_IMAGE=continuumio/miniconda3:4.7.12
 
 .PHONY: build-base
-build-base: IMAGE_NAME := nimbus-base
-build-base: VERSION := $(NIMBUS_BASE_VERSION)
 build-base: 
 	$(BUILD) build.sh dockerfiles/nimbus_base $(CACHE_ARGS) $(OUTPUT_ARGS) \
-		--opt build-arg:BASE_CONTAINER=$(NIMBUS_BASE_CONTAINER)
+		--opt build-arg:BASE_IMAGE=$(BASE_IMAGE)
 
 	$(POST_BUILD)
 
@@ -51,7 +52,7 @@ build-cdat: IMAGE_NAME := nimbus-cdat
 build-cdat: VERSION ?= $(shell cat dockerfiles/nimbus_cdat/VERSION)
 build-cdat:
 	$(BUILD) build.sh dockerfiles/nimbus_cdat $(CACHE_ARGS) $(OUTPUT_ARGS) \
-		--opt build-arg:BASE_CONTAINER=$(OUTPUT_REGISTRY)nimbus-base:$(NIMBUS_BASE_VERSION)
+		--opt build-arg:BASE_IMAGE=$(NIMBUS_BASE)
 	
 	$(POST_BUILD)
 
@@ -60,6 +61,6 @@ build-dev: IMAGE_NAME := nimbus-dev
 build-dev: VERSION ?= $(shell cat dockerfiles/nimbus_dev/VERSION)
 build-dev:
 	$(BUILD) build.sh dockerfiles/nimbus_dev $(CACHE_ARGS) $(OUTPUT_ARGS) \
-		--opt build-arg:BASE_CONTAINER=$(OUTPUT_REGISTRY)nimbus-base:$(NIMBUS_BASE_VERSION)
+		--opt build-arg:BASE_IMAGE=$(NIMBUS_BASE)
 
 	$(POST_BUILD)

@@ -1,5 +1,5 @@
-ARG BASE_CONTAINER
-FROM $BASE_CONTAINER
+ARG BASE_IMAGE
+FROM $BASE_IMAGE
 
 RUN conda install -c conda-forge -y nodejs xeus-python=0.8.0 ptvsd ipyleaflet curl && \
       pip install jupyter-lsp jupyterlab-git && \
