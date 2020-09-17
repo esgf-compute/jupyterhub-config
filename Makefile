@@ -32,7 +32,8 @@ BASE_IMAGE_TAG := lab-2.2.5
 BASE_IMAGE := jupyter/base-notebook:$(BASE_IMAGE_TAG)
 
 NIMBUS_BASE_TAG := $(shell cat dockerfiles/nimbus_base/VERSION)
-NIMBUS_BASE := $(REGISTRY)/nimbus-base:$(NIMBUS_BASE_TAG)
+NIMBUS_BASE_IMAGE := nimbus-base
+NIMBUS_BASE := $(REGISTRY)/$(NIMBUS_BASE_IMAGE):$(NIMBUS_BASE_TAG)
 
 .PHONY: build-search
 build-search:
@@ -41,6 +42,8 @@ build-search:
 		--opt build-arg:BASE_IMAGE=continuumio/miniconda3:4.7.12
 
 .PHONY: build-base
+build-base: IMAGE_NAME := $(NIMBUS_BASE_IMAGE)
+build-base: VERSION := $(NIMBUS_BASE_TAG)
 build-base: 
 	$(BUILD) build.sh dockerfiles/nimbus_base $(CACHE_ARGS) $(OUTPUT_ARGS) \
 		--opt build-arg:BASE_IMAGE=$(BASE_IMAGE)
@@ -49,7 +52,7 @@ build-base:
 
 .PHONY: build-cdat
 build-cdat: IMAGE_NAME := nimbus-cdat
-build-cdat: VERSION ?= $(shell cat dockerfiles/nimbus_cdat/VERSION)
+build-cdat: VERSION := $(shell cat dockerfiles/nimbus_cdat/VERSION)
 build-cdat:
 	$(BUILD) build.sh dockerfiles/nimbus_cdat $(CACHE_ARGS) $(OUTPUT_ARGS) \
 		--opt build-arg:BASE_IMAGE=$(NIMBUS_BASE)
@@ -58,7 +61,7 @@ build-cdat:
 
 .PHONY: build-dev
 build-dev: IMAGE_NAME := nimbus-dev
-build-dev: VERSION ?= $(shell cat dockerfiles/nimbus_dev/VERSION)
+build-dev: VERSION := $(shell cat dockerfiles/nimbus_dev/VERSION)
 build-dev:
 	$(BUILD) build.sh dockerfiles/nimbus_dev $(CACHE_ARGS) $(OUTPUT_ARGS) \
 		--opt build-arg:BASE_IMAGE=$(NIMBUS_BASE)
