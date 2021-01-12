@@ -28,7 +28,7 @@ endif
 
 POST_BUILD = $(if $(findstring true,$(OUTPUT_LOCAL)),cat $(OUTPUT_PATH)/image.tar | docker load,)
 
-BASE_IMAGE_TAG := lab-2.2.5
+BASE_IMAGE_TAG := lab-2.2.9
 BASE_IMAGE := jupyter/base-notebook:$(BASE_IMAGE_TAG)
 
 NIMBUS_BASE_TAG := $(shell cat dockerfiles/nimbus_base/VERSION)
